@@ -84,41 +84,115 @@ const Invoice = () => {
     e.preventDefault();
 
     const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("Invoice Details", 20, 20);
 
-    doc.setFontSize(12);
-    doc.text(`Invoice Number: ${invoice.invoiceNumber}`, 20, 40);
-    doc.text(`Date: ${invoice.date}`, 20, 50);
-    doc.text(`Customer Name: ${invoice.customerName}`, 20, 60);
+    // Title and Company Details
+    doc.setFontSize(24);
+    doc.text("RGI Print", 20, 20);
 
-    // Add item details
-    let y = 80;
-    doc.text("Items:", 20, y);
-    invoice.items.forEach((item, index) => {
-      y += 10;
-      doc.text(
-        `${index + 1}. ${item.description} - Quantity: ${
-          item.quantity
-        }, Price: $${item.price}`,
-        20,
-        y
-      );
+    // Company Information
+    doc.setFontSize(10);
+    doc.text("345 W Main", 20, 40);
+    doc.text("Los Angeles, CA 14151", 20, 45);
+    doc.text("P: 915-555-0195", 20, 50);
+    doc.text("rgi.print@example.com", 20, 55);
+
+    // Invoice Information
+    doc.setFontSize(10);
+    doc.text(`Numéro de facture: ${invoice?.invoiceNumber || "22"}`, 185, 40, {
+      align: "right",
+    });
+    doc.text(`Date de facturation: ${invoice?.date || "2024-12-15"}`, 185, 45, {
+      align: "right",
+    });
+    doc.text(`Motif: ${invoice?.notes || "Décoration florale"}`, 185, 50, {
+      align: "right",
     });
 
-    // Add total amount
-    const totalAmount = invoice.items.reduce(
-      (sum, item) => sum + item.quantity * item.price,
-      0
+    // Billing Details
+    doc.setFontSize(12);
+    doc.text("Facturé à:", 20, 80);
+    doc.setFontSize(10);
+    doc.text(
+      `Nom: ${invoice?.billingDetails?.customerName || "Hailey Clark"}`,
+      20,
+      85
     );
-    y += 20;
-    doc.text(`Total Amount: $${totalAmount.toFixed(2)}`, 20, y);
+    doc.text(
+      `Adresse: ${invoice?.billingDetails?.address?.street || "123 Avenue A"}`,
+      20,
+      90
+    );
+    doc.text(
+      `Téléphone: ${invoice?.billingDetails?.phone || "805-555-0185"}`,
+      20,
+      95
+    );
 
-    doc.save(`invoice_${invoice.invoiceNumber}.pdf`);
+    // Table Headers
+    let y = 120;
+    doc.setFontSize(10);
+    doc.setFillColor(200, 200, 200); // Light gray for the header row
+    doc.rect(20, y, 170, 10, "F");
+    doc.text("Description", 25, y + 7);
+    doc.text("Quantité", 100, y + 7, { align: "center" });
+    doc.text("Prix Unitaire (DH)", 130, y + 7, { align: "center" });
+    doc.text("Prix Total (DH)", 180, y + 7, { align: "right" });
 
-    setInvoice({ ...initialInvoiceValue });
+    // Table Items
+    y += 16;
+    invoice?.items.forEach((item, index) => {
+      doc.text(item.description || "Description", 25, y);
+      doc.text(String(item.quantity || 0), 100, y, { align: "center" });
+      doc.text(`${item.unitPrice?.toFixed(2) || "0.00"}`, 130, y, {
+        align: "center",
+      });
+      const price = item.quantity * (item.unitPrice || 0);
+      doc.text(`${price.toFixed(2)}`, 180, y, { align: "right" });
+      y += 10;
+    });
 
-    alert("Invoice saved as PDF!");
+    // Summary Section
+    y += 10;
+    doc.setFontSize(12);
+    doc.text(`Montant HT :`, 135, y);
+    doc.text(`${invoice?.subTotal?.toFixed(2) || "0.00"} DH`, 175, y, {
+      align: "center",
+    });
+
+    y += 7;
+    doc.text("TVA : ", 135, y);
+    const taxRate = 20;
+    doc.text(`${taxRate}%`, 175, y, { align: "center" });
+
+    y += 7;
+    const taxAmount = (invoice?.subTotal * taxRate) / 100;
+    doc.text(`Montant TTC :`, 135, y);
+    doc.text(`${taxAmount.toFixed(2)} DH`, 175, y, { align: "center" });
+
+    // Footer Notes
+    const footerY = 275; // Place footer at the bottom
+    doc.setFontSize(10);
+    doc.text(
+      "Veuillez libeller tous les chèques à l'ordre de RGI Print.",
+      105,
+      footerY,
+      { align: "center" }
+    );
+    doc.text(
+      "Paiement total dû sous 90 jours. Comptes en retard soumis à des frais de service de 1,5% par mois.",
+      105,
+      footerY + 5,
+      { align: "center" }
+    );
+    doc.text(
+      "rgi.print@example.com | www.siteinteressant.com",
+      105,
+      footerY + 10,
+      { align: "center" }
+    );
+
+    // Save PDF
+    doc.save(`facture_${invoice?.invoiceNumber || "exemple"}.pdf`);
   };
 
   const totalHT = invoice.items.reduce(
@@ -127,7 +201,7 @@ const Invoice = () => {
   );
 
   const totalTTC = totalHT * 1.2;
-  const totalEnLettres = prixEnLettres(totalHT * 1.2);
+  // const totalEnLettres = prixEnLettres(totalHT * 1.2);
 
   return (
     <ThemeProvider theme={overrides}>
@@ -283,7 +357,7 @@ const Invoice = () => {
                     disabled
                     label="Total"
                     name="totalPrice"
-                    value={Number(itm.price * itm.quantity).toFixed(2)}
+                    value={Number(itm.price * itm.quantity)?.toFixed(2)}
                     type="number"
                     fullWidth
                   />
@@ -294,7 +368,7 @@ const Invoice = () => {
             <div className={styles.total}>
               <div className={styles.totalItem}>
                 <p className={styles.secondary}>Total HT : </p>
-                <p>{totalHT.toFixed(2)} DH</p>
+                <p>{totalHT?.toFixed(2)} DH</p>
               </div>
               <div className={styles.totalItem}>
                 <p className={styles.secondary}>TVA : </p>
@@ -305,19 +379,21 @@ const Invoice = () => {
                   Total TTC :{" "}
                 </p>
                 <p style={{ fontWeight: 700, fontSize: "16px" }}>
-                  {totalTTC.toFixed(2)} DH
+                  {totalTTC?.toFixed(2)} DH
                 </p>
               </div>
 
-              <p style={{ fontWeight: 700, fontSize: "16px" }}>
+              {/* <p style={{ fontWeight: 700, fontSize: "16px" }}>
                 {totalEnLettres}
-              </p>
+              </p> */}
+            </div>
+
+            <div className={styles.details}>
+              <Button type="submit" variant="contained">
+                Save as PDF
+              </Button>
             </div>
           </form>
-
-          <Button type="submit" variant="contained">
-            Save as PDF
-          </Button>
         </div>
       </div>
     </ThemeProvider>
