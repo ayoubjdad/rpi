@@ -1,0 +1,95 @@
+.main {
+  //   background-color: #e6e6e6;
+}
+
+.container {
+  gap: 24px;
+  display: grid;
+  margin: 60px;
+  form {
+    gap: 24px;
+    display: grid;
+    padding: 24px 0;
+    overflow: hidden;
+    display: grid;
+    border-radius: 16px;
+    box-shadow: rgba(145, 158, 171, 0.2) 0px 0px 2px 0px,
+      rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+  }
+}
+
+.header {
+  gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.headerFrom {
+  border-right: 1px dashed #e6e6e6;
+}
+
+.headerFrom,
+.headerTo {
+  gap: 12px;
+  display: grid;
+}
+
+.headerToTop {
+  display: flex;
+  justify-content: space-between;
+}
+
+.from {
+  padding: 0 24px;
+  gap: 12px;
+  display: grid;
+}
+
+.invoiceInfos {
+  gap: 24px;
+  padding: 24px;
+  display: grid;
+  background-color: #f4f6f8;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.details {
+  gap: 24px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+
+.secondTitle {
+  padding: 0 24px;
+  color: #919eab;
+}
+
+.itemsList {
+  gap: 12px;
+  display: grid;
+}
+
+.item {
+  gap: 24px;
+  display: grid;
+  padding: 0 24px;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+
+.total {
+  gap: 16px;
+  display: grid;
+  padding: 0 24px;
+  justify-content: end;
+}
+
+.totalItem {
+  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.secondary {
+  color: #637381;
+}
