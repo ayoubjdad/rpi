@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { jsPDF } from "jspdf";
 import styles from "./Invoice.module.scss";
-import { TextField, Button, ThemeProvider, Dialog, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  ThemeProvider,
+  Dialog,
+  Box,
+  Autocomplete,
+} from "@mui/material";
 import { overrides } from "../../../theme/overrides";
 import { prixEnLettres } from "../../../helpers/function.helper";
 import { clients } from "../../../data/data";
@@ -20,15 +27,7 @@ const initialInvoiceValue = {
       country: "",
     },
   },
-  items: [
-    // {
-    //   description: "Wireless Mouse",
-    //   quantity: 2,
-    //   unitPrice: 25.0,
-    //   taxRate: 10,
-    //   total: 55.0,
-    // },
-  ],
+  items: [],
   totalHT: 0,
   TVA: 20,
   notes: "",
@@ -205,9 +204,10 @@ const Invoice = () => {
                 <h2 className={styles.secondTitle}>From:</h2>
 
                 <div className={styles.from}>
-                  <div>Rpi</div>
+                  <div>RGI Print</div>
                   <div>19034 Verna Unions Apt. 164 - Honolulu, RI / 87535</div>
                   <div>+212 707-220-199</div>
+                  <div>ICE: {clients[0].ICE}</div>
                 </div>
               </div>
 
@@ -244,13 +244,15 @@ const Invoice = () => {
                 margin="normal"
                 required
               />
-              <TextField
-                label="Status"
-                name="invoiceStatus"
-                value={invoice.invoiceStatus}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
+              <Autocomplete
+                value={invoice.status}
+                options={["Payée", "En cours", "Annulée"]}
+                onChange={(_, value) =>
+                  setInvoice((prev) => ({ ...prev, status: value }))
+                }
+                renderInput={(params) => (
+                  <TextField {...params} label="Status" />
+                )}
               />
               <TextField
                 label="Date"
@@ -389,23 +391,26 @@ const Invoice = () => {
 };
 
 const Popup = ({ open, handleClose, selectClient }) => {
+  const onChange = (value) => {
+    const client = clients.find((client) => client.customerName === value);
+    selectClient((prev) => ({ ...prev, client }));
+    handleClose();
+  };
   return (
     <Dialog onClose={handleClose} open={open}>
-      {clients.map((client) => (
-        <div
-          className={styles.client}
-          onClick={() => {
-            selectClient((prev) => ({ ...prev, client }));
-            handleClose();
-          }}
-        >
-          <div>{client?.customerName}</div>
-          {/* <div>
-            {`${client?.address.street}, ${client?.address.city},  ${client?.address.country}`}
-          </div>
-          <div>{client?.phone}</div> */}
-        </div>
-      ))}
+      <div
+        style={{
+          gap: "12px",
+          display: "grid",
+        }}
+      >
+        <h3>Choisi un client</h3>
+        <Autocomplete
+          options={clients.map((client) => client.customerName)}
+          onChange={(_, value) => onChange(value)}
+          renderInput={(params) => <TextField {...params} label="Client" />}
+        />
+      </div>
     </Dialog>
   );
 };

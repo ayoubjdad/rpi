@@ -61,6 +61,7 @@ export const overrides = createTheme({
         paper: {
           margin: 0,
           padding: "24px",
+          minWidth: "300px",
           borderRadius: "8px",
         },
       },
