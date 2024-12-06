@@ -54,5 +54,16 @@ export const overrides = createTheme({
         },
       },
     },
+
+    // * Dialog
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          margin: 0,
+          padding: "24px",
+          borderRadius: "8px",
+        },
+      },
+    },
   },
 });

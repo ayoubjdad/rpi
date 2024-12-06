@@ -1,24 +1,22 @@
 import React, { useState } from "react";
 import { jsPDF } from "jspdf";
 import styles from "./Invoice.module.scss";
-import { TextField, Button, ThemeProvider } from "@mui/material";
+import { TextField, Button, ThemeProvider, Dialog, Box } from "@mui/material";
 import { overrides } from "../../../theme/overrides";
 import { prixEnLettres } from "../../../helpers/function.helper";
+import { clients } from "../../../data/data";
 
 const initialInvoiceValue = {
-  invoiceId: "",
+  invoiceId: Math.random(),
   invoiceNumber: "",
   date: "",
-  dueDate: "",
-  billingDetails: {
-    customerName: "",
+  client: {
+    name: "",
     email: "",
     phone: "",
     address: {
       street: "",
       city: "",
-      state: "",
-      postalCode: "",
       country: "",
     },
   },
@@ -31,14 +29,10 @@ const initialInvoiceValue = {
     //   total: 55.0,
     // },
   ],
-  subTotal: 100.0,
-  taxes: {
-    taxRate: 10,
-    taxAmount: 10.0,
-  },
-  total: 105.0,
+  totalHT: 0,
+  TVA: 20,
   notes: "",
-  status: "Pending",
+  status: "",
 };
 
 const Invoice = () => {
@@ -51,6 +45,11 @@ const Invoice = () => {
     quantity: "",
     price: "",
   });
+
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -112,21 +111,9 @@ const Invoice = () => {
     doc.setFontSize(12);
     doc.text("Facturé à:", 20, 80);
     doc.setFontSize(10);
-    doc.text(
-      `Nom: ${invoice?.billingDetails?.customerName || "Hailey Clark"}`,
-      20,
-      85
-    );
-    doc.text(
-      `Adresse: ${invoice?.billingDetails?.address?.street || "123 Avenue A"}`,
-      20,
-      90
-    );
-    doc.text(
-      `Téléphone: ${invoice?.billingDetails?.phone || "805-555-0185"}`,
-      20,
-      95
-    );
+    doc.text(`Nom: ${invoice?.client?.customerName}`, 20, 85);
+    doc.text(`Adresse: ${invoice?.client?.address?.street}`, 20, 90);
+    doc.text(`Téléphone: ${invoice?.client?.phone}`, 20, 95);
 
     // Table Headers
     let y = 120;
@@ -143,11 +130,11 @@ const Invoice = () => {
     invoice?.items.forEach((item, index) => {
       doc.text(item.description || "Description", 25, y);
       doc.text(String(item.quantity || 0), 100, y, { align: "center" });
-      doc.text(`${item.unitPrice?.toFixed(2) || "0.00"}`, 130, y, {
+      doc.text(`${Number(item.price)?.toFixed(2)}`, 130, y, {
         align: "center",
       });
-      const price = item.quantity * (item.unitPrice || 0);
-      doc.text(`${price.toFixed(2)}`, 180, y, { align: "right" });
+      const price = Number(item.quantity) * Number(item.price);
+      doc.text(`${Number(price)?.toFixed(2)}`, 180, y, { align: "right" });
       y += 10;
     });
 
@@ -155,19 +142,20 @@ const Invoice = () => {
     y += 10;
     doc.setFontSize(12);
     doc.text(`Montant HT :`, 135, y);
-    doc.text(`${invoice?.subTotal?.toFixed(2) || "0.00"} DH`, 175, y, {
+    let totalHT = 0;
+    invoice.items.forEach((item) => (totalHT += item.quantity * item.price));
+    doc.text(`${totalHT} DH`, 175, y, {
       align: "center",
     });
 
     y += 7;
     doc.text("TVA : ", 135, y);
-    const taxRate = 20;
-    doc.text(`${taxRate}%`, 175, y, { align: "center" });
+    doc.text(`${invoice?.TVA}%`, 175, y, { align: "center" });
 
     y += 7;
-    const taxAmount = (invoice?.subTotal * taxRate) / 100;
     doc.text(`Montant TTC :`, 135, y);
-    doc.text(`${taxAmount.toFixed(2)} DH`, 175, y, { align: "center" });
+    const totalTTC = totalHT + (totalHT * invoice.TVA) / 100;
+    doc.text(`${totalTTC.toFixed(2)} DH`, 175, y, { align: "center" });
 
     // Footer Notes
     const footerY = 275; // Place footer at the bottom
@@ -205,6 +193,8 @@ const Invoice = () => {
 
   return (
     <ThemeProvider theme={overrides}>
+      <Popup open={open} handleClose={handleClose} selectClient={setInvoice} />
+
       <div className={styles.main}>
         <div className={styles.container}>
           {/* <h1>Create a new invoice</h1> */}
@@ -224,14 +214,23 @@ const Invoice = () => {
               <div className={styles.headerTo}>
                 <div className={styles.headerToTop}>
                   <h2 className={styles.secondTitle}>To:</h2>
-                  <h2 className={styles.secondTitle}>+</h2>
+                  <Box
+                    component="i"
+                    className={`fi fi-rr-plus ${styles.addCustomer}`}
+                    onClick={handleOpen}
+                  />
                 </div>
 
-                <div className={styles.from}>
-                  <div>{invoice.billingDetails.customerName}</div>
-                  <div>{invoice.billingDetails.address.street}</div>
-                  <div>{invoice.billingDetails.phone}</div>
-                </div>
+                {invoice?.client?.customerName && (
+                  <div className={styles.from}>
+                    <div>{invoice?.client?.customerName}</div>
+                    <div>
+                      {`${invoice?.client?.address.street}, ${invoice?.client?.address.city},  ${invoice?.client?.address.country}`}
+                    </div>
+                    <div>{invoice?.client?.phone}</div>
+                    <div>ICE: {invoice?.client?.ICE}</div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -264,15 +263,6 @@ const Invoice = () => {
                 InputLabelProps={{ shrink: true }}
                 required
               />
-              {/* <TextField
-                label="Customer Name"
-                name="customerName"
-                value={invoice.customerName}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
-                required
-              /> */}
             </div>
 
             <h2 className={styles.secondTitle}>Details:</h2>
@@ -375,9 +365,7 @@ const Invoice = () => {
                 <p>20%</p>
               </div>
               <div className={styles.totalItem}>
-                <p style={{ fontWeight: 700, fontSize: "16px" }}>
-                  Total TTC :{" "}
-                </p>
+                <p style={{ fontWeight: 700, fontSize: "16px" }}>Total TTC :</p>
                 <p style={{ fontWeight: 700, fontSize: "16px" }}>
                   {totalTTC?.toFixed(2)} DH
                 </p>
@@ -397,6 +385,28 @@ const Invoice = () => {
         </div>
       </div>
     </ThemeProvider>
+  );
+};
+
+const Popup = ({ open, handleClose, selectClient }) => {
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      {clients.map((client) => (
+        <div
+          className={styles.client}
+          onClick={() => {
+            selectClient((prev) => ({ ...prev, client }));
+            handleClose();
+          }}
+        >
+          <div>{client?.customerName}</div>
+          {/* <div>
+            {`${client?.address.street}, ${client?.address.city},  ${client?.address.country}`}
+          </div>
+          <div>{client?.phone}</div> */}
+        </div>
+      ))}
+    </Dialog>
   );
 };
 

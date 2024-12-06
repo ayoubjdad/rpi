@@ -45,6 +45,17 @@
   display: grid;
 }
 
+.client {
+  gap: 12px;
+  padding: 24px;
+  display: grid;
+  cursor: pointer;
+  border-radius: 6px;
+  &:hover {
+    background-color: #f4f6f8;
+  }
+}
+
 .invoiceInfos {
   gap: 24px;
   padding: 24px;
@@ -63,6 +74,19 @@
 .secondTitle {
   padding: 0 24px;
   color: #919eab;
+}
+
+.addCustomer {
+  padding: 8px;
+  display: flex;
+  cursor: pointer;
+  color: #919eab;
+  border-radius: 6px;
+  margin-right: 24px;
+  height: fit-content;
+  &:hover {
+    background-color: #e6e6e6;
+  }
 }
 
 .itemsList {
