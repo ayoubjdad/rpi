@@ -5,7 +5,7 @@
 .container {
   gap: 24px;
   display: grid;
-  margin: 60px;
+  margin: 20px;
   form {
     gap: 24px;
     display: grid;
@@ -69,6 +69,12 @@
   padding: 0 24px;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+
+.buttons {
+  gap: 12px;
+  display: flex;
+  padding: 0 24px;
 }
 
 .secondTitle {

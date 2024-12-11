@@ -1,32 +1,29 @@
 import React, { useState } from "react";
-import { jsPDF } from "jspdf";
 import styles from "./Invoice.module.scss";
+
+import axios from "axios";
+import { jsPDF } from "jspdf";
+import { useQuery } from "react-query";
+
 import {
-  TextField,
-  Button,
-  ThemeProvider,
-  Dialog,
   Box,
+  Button,
+  Dialog,
+  TextField,
   Autocomplete,
+  ThemeProvider,
 } from "@mui/material";
+
 import { overrides } from "../../../theme/overrides";
 import { prixEnLettres } from "../../../helpers/function.helper";
 import { clients } from "../../../data/data";
+import { serverUrl } from "../../../config/config";
 
 const initialInvoiceValue = {
   invoiceId: Math.random(),
   invoiceNumber: "",
   date: "",
-  client: {
-    name: "",
-    email: "",
-    phone: "",
-    address: {
-      street: "",
-      city: "",
-      country: "",
-    },
-  },
+  clientId: "",
   items: [],
   totalHT: 0,
   TVA: 20,
@@ -34,7 +31,20 @@ const initialInvoiceValue = {
   status: "",
 };
 
+const getInvoices = async () => {
+  const response = await fetch(`${serverUrl}/invoices`);
+  return response.json();
+};
+
+const options = {
+  retry: false,
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+};
+
 const Invoice = () => {
+  const { data: invoices } = useQuery("invoices", getInvoices, options);
+
   const [invoice, setInvoice] = useState({
     ...initialInvoiceValue,
   });
@@ -47,8 +57,24 @@ const Invoice = () => {
 
   const [open, setOpen] = useState(false);
 
+  const client = !invoice?.clientId
+    ? null
+    : clients.find((client) => client.id === invoice.clientId);
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const saveInvoice = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(`${serverUrl}/invoices`, invoice);
+      console.log("Invoice saved successfully:", response.data);
+    } catch (error) {
+      console.error("❌ Error saving invoice:", error);
+      throw error;
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,7 +104,7 @@ const Invoice = () => {
     }
   };
 
-  const handleSave = (e) => {
+  const handleSaveAndDownload = (e) => {
     e.preventDefault();
 
     const doc = new jsPDF();
@@ -110,9 +136,9 @@ const Invoice = () => {
     doc.setFontSize(12);
     doc.text("Facturé à:", 20, 80);
     doc.setFontSize(10);
-    doc.text(`Nom: ${invoice?.client?.customerName}`, 20, 85);
-    doc.text(`Adresse: ${invoice?.client?.address?.street}`, 20, 90);
-    doc.text(`Téléphone: ${invoice?.client?.phone}`, 20, 95);
+    doc.text(`Nom: ${client?.customerName}`, 20, 85);
+    doc.text(`Adresse: ${client?.address?.street}`, 20, 90);
+    doc.text(`ICE: ${client?.ICE}`, 20, 95);
 
     // Table Headers
     let y = 120;
@@ -196,12 +222,10 @@ const Invoice = () => {
 
       <div className={styles.main}>
         <div className={styles.container}>
-          {/* <h1>Create a new invoice</h1> */}
-
-          <form onSubmit={handleSave}>
+          <form onSubmit={handleSaveAndDownload}>
             <div className={styles.header}>
               <div className={styles.headerFrom}>
-                <h2 className={styles.secondTitle}>From:</h2>
+                <h2 className={styles.secondTitle}>De:</h2>
 
                 <div className={styles.from}>
                   <div>RGI Print</div>
@@ -213,7 +237,7 @@ const Invoice = () => {
 
               <div className={styles.headerTo}>
                 <div className={styles.headerToTop}>
-                  <h2 className={styles.secondTitle}>To:</h2>
+                  <h2 className={styles.secondTitle}>Client:</h2>
                   <Box
                     component="i"
                     className={`fi fi-rr-plus ${styles.addCustomer}`}
@@ -221,14 +245,14 @@ const Invoice = () => {
                   />
                 </div>
 
-                {invoice?.client?.customerName && (
+                {client && (
                   <div className={styles.from}>
-                    <div>{invoice?.client?.customerName}</div>
+                    <div>{client?.customerName}</div>
                     <div>
-                      {`${invoice?.client?.address.street}, ${invoice?.client?.address.city},  ${invoice?.client?.address.country}`}
+                      {`${client?.address.street}, ${client?.address.city},  ${client?.address.country}`}
                     </div>
-                    <div>{invoice?.client?.phone}</div>
-                    <div>ICE: {invoice?.client?.ICE}</div>
+                    <div>{client?.phone}</div>
+                    <div>ICE: {client?.ICE}</div>
                   </div>
                 )}
               </div>
@@ -236,7 +260,7 @@ const Invoice = () => {
 
             <div className={styles.invoiceInfos}>
               <TextField
-                label="Invoice Number"
+                label="Numéro de facture"
                 name="invoiceNumber"
                 value={invoice.invoiceNumber}
                 onChange={handleChange}
@@ -251,7 +275,7 @@ const Invoice = () => {
                   setInvoice((prev) => ({ ...prev, status: value }))
                 }
                 renderInput={(params) => (
-                  <TextField {...params} label="Status" />
+                  <TextField {...params} label="Statut" />
                 )}
               />
               <TextField
@@ -267,11 +291,11 @@ const Invoice = () => {
               />
             </div>
 
-            <h2 className={styles.secondTitle}>Details:</h2>
+            <h2 className={styles.secondTitle}>Détails:</h2>
 
             <div className={styles.details}>
               <TextField
-                label="Description"
+                label="Déscription"
                 name="description"
                 value={item.description}
                 onChange={handleItemChange}
@@ -279,7 +303,7 @@ const Invoice = () => {
                 margin="normal"
               />
               <TextField
-                label="Quantity"
+                label="Quantité"
                 name="quantity"
                 value={item.quantity}
                 onChange={handleItemChange}
@@ -288,7 +312,7 @@ const Invoice = () => {
                 margin="normal"
               />
               <TextField
-                label="Price"
+                label="Prix Unitaire (DH)"
                 name="price"
                 value={item.price}
                 onChange={handleItemChange}
@@ -297,7 +321,7 @@ const Invoice = () => {
                 margin="normal"
               />
               <TextField
-                label="Total"
+                label="Total (DH)"
                 name="totalPrice"
                 value={Number(item.price * item.quantity)}
                 type="number"
@@ -313,74 +337,84 @@ const Invoice = () => {
                 onClick={addItem}
                 startIcon={<i className="fi fi-rr-plus-small" />}
               >
-                Add Item
+                Ajouter un élément
               </Button>
             </div>
 
-            <h2 className={styles.secondTitle}>Items List:</h2>
+            {!invoice.items?.length ? null : (
+              <>
+                <h2 className={styles.secondTitle}>Eléménts:</h2>
 
-            <div className={styles.itemsList}>
-              {invoice.items.map((itm, index) => (
-                <div key={index} className={styles.item}>
-                  <TextField
-                    disabled
-                    label="Description"
-                    name="description"
-                    value={itm.description}
-                    fullWidth
-                  />
-                  <TextField
-                    disabled
-                    label="Quantity"
-                    name="quantity"
-                    value={itm.quantity}
-                    type="number"
-                    fullWidth
-                  />
-                  <TextField
-                    disabled
-                    label="Price"
-                    name="price"
-                    value={itm.price}
-                    type="number"
-                    fullWidth
-                  />
-                  <TextField
-                    disabled
-                    label="Total"
-                    name="totalPrice"
-                    value={Number(itm.price * itm.quantity)?.toFixed(2)}
-                    type="number"
-                    fullWidth
-                  />
+                <div className={styles.itemsList}>
+                  {invoice.items.map((itm, index) => (
+                    <div key={index} className={styles.item}>
+                      <TextField
+                        disabled
+                        label="Description"
+                        name="description"
+                        value={itm.description}
+                        fullWidth
+                      />
+                      <TextField
+                        disabled
+                        label="Quantity"
+                        name="quantity"
+                        value={itm.quantity}
+                        type="number"
+                        fullWidth
+                      />
+                      <TextField
+                        disabled
+                        label="Price"
+                        name="price"
+                        value={itm.price}
+                        type="number"
+                        fullWidth
+                      />
+                      <TextField
+                        disabled
+                        label="Total"
+                        name="totalPrice"
+                        value={Number(itm.price * itm.quantity)?.toFixed(2)}
+                        type="number"
+                        fullWidth
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <div className={styles.total}>
-              <div className={styles.totalItem}>
-                <p className={styles.secondary}>Total HT : </p>
-                <p>{totalHT?.toFixed(2)} DH</p>
-              </div>
-              <div className={styles.totalItem}>
-                <p className={styles.secondary}>TVA : </p>
-                <p>20%</p>
-              </div>
-              <div className={styles.totalItem}>
-                <p style={{ fontWeight: 700, fontSize: "16px" }}>Total TTC :</p>
-                <p style={{ fontWeight: 700, fontSize: "16px" }}>
-                  {totalTTC?.toFixed(2)} DH
-                </p>
-              </div>
+                <div className={styles.total}>
+                  <div className={styles.totalItem}>
+                    <p className={styles.secondary}>Total HT : </p>
+                    <p>{totalHT?.toFixed(2)} DH</p>
+                  </div>
+                  <div className={styles.totalItem}>
+                    <p className={styles.secondary}>TVA : </p>
+                    <p>20%</p>
+                  </div>
+                  <div className={styles.totalItem}>
+                    <p style={{ fontWeight: 700, fontSize: "16px" }}>
+                      Total TTC :
+                    </p>
+                    <p style={{ fontWeight: 700, fontSize: "16px" }}>
+                      {totalTTC?.toFixed(2)} DH
+                    </p>
+                  </div>
 
-              {/* <p style={{ fontWeight: 700, fontSize: "16px" }}>
+                  {/* <p style={{ fontWeight: 700, fontSize: "16px" }}>
                 {totalEnLettres}
               </p> */}
-            </div>
+                </div>
+              </>
+            )}
 
-            <div className={styles.details}>
+            <div className={styles.buttons}>
+              <Button onClick={saveInvoice} variant="outlined">
+                Enregistrer
+              </Button>
+
               <Button type="submit" variant="contained">
-                Save as PDF
+                Télécharger en PDF
               </Button>
             </div>
           </form>
@@ -393,9 +427,10 @@ const Invoice = () => {
 const Popup = ({ open, handleClose, selectClient }) => {
   const onChange = (value) => {
     const client = clients.find((client) => client.customerName === value);
-    selectClient((prev) => ({ ...prev, client }));
+    selectClient((prev) => ({ ...prev, clientId: client.id }));
     handleClose();
   };
+
   return (
     <Dialog onClose={handleClose} open={open}>
       <div

@@ -27,6 +27,11 @@ export const overrides = createTheme({
           fontFamily: "CircularStd",
           backgroundColor: "#111111",
         },
+        outlined: {
+          backgroundColor: "transparent",
+          color: "#111111",
+          border: "1px solid #111111",
+        },
         startIcon: { i: { display: "flex" } },
         endIcon: { i: { display: "flex" } },
       },
