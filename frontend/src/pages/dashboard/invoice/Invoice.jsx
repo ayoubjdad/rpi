@@ -65,7 +65,7 @@ const Invoice = () => {
   const handleClose = () => setOpen(false);
 
   const saveInvoice = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
 
     try {
       const response = await axios.post(`${serverUrl}/invoices`, invoice);
@@ -166,21 +166,23 @@ const Invoice = () => {
     // Summary Section
     y += 10;
     doc.setFontSize(12);
-    doc.text(`Montant HT :`, 135, y);
+    doc.text(`Montant HT :`, 20, y);
     let totalHT = 0;
     invoice.items.forEach((item) => (totalHT += item.quantity * item.price));
-    doc.text(`${totalHT} DH`, 175, y, {
-      align: "center",
-    });
+    doc.text(`${totalHT} DH`, 60, y);
 
     y += 7;
-    doc.text("TVA : ", 135, y);
-    doc.text(`${invoice?.TVA}%`, 175, y, { align: "center" });
+    doc.text("TVA : ", 20, y);
+    doc.text(`${invoice?.TVA}%`, 60, y, { align: "left" });
 
     y += 7;
-    doc.text(`Montant TTC :`, 135, y);
+    doc.text(`Montant TTC :`, 20, y);
     const totalTTC = totalHT + (totalHT * invoice.TVA) / 100;
-    doc.text(`${totalTTC.toFixed(2)} DH`, 175, y, { align: "center" });
+    doc.text(`${totalTTC.toFixed(2)} DH`, 60, y, { align: "left" });
+
+    y += 7;
+    const totalEnLettres = prixEnLettres(totalTTC);
+    doc.text(totalEnLettres, 20, y, { align: "left" });
 
     // Footer Notes
     const footerY = 275; // Place footer at the bottom
@@ -205,6 +207,7 @@ const Invoice = () => {
     );
 
     // Save PDF
+    // saveInvoice();
     doc.save(`facture_${invoice?.invoiceNumber || "exemple"}.pdf`);
   };
 
@@ -214,7 +217,7 @@ const Invoice = () => {
   );
 
   const totalTTC = totalHT * 1.2;
-  // const totalEnLettres = prixEnLettres(totalHT * 1.2);
+  const totalEnLettres = prixEnLettres(totalHT * 1.2);
 
   return (
     <ThemeProvider theme={overrides}>
@@ -401,9 +404,9 @@ const Invoice = () => {
                     </p>
                   </div>
 
-                  {/* <p style={{ fontWeight: 700, fontSize: "16px" }}>
-                {totalEnLettres}
-              </p> */}
+                  <p style={{ fontWeight: 700, fontSize: "16px" }}>
+                    {totalEnLettres}
+                  </p>
                 </div>
               </>
             )}
