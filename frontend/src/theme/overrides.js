@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { colors, createTheme } from "@mui/material";
 
 export const overrides = createTheme({
   palette: {
@@ -16,6 +16,7 @@ export const overrides = createTheme({
     },
   },
   components: {
+    // * Button
     MuiButton: {
       styleOverrides: {
         root: {
@@ -68,6 +69,34 @@ export const overrides = createTheme({
           padding: "24px",
           minWidth: "300px",
           borderRadius: "8px",
+        },
+      },
+    },
+
+    // * Tabs
+    MuiTabs: {
+      styleOverrides: {
+        indicator: {
+          width: 0,
+        },
+      },
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          fontWeight: 700,
+          textAlign: "left",
+          borderRadius: "8px",
+          textTransform: "none",
+          alignItems: "flex-start",
+          fontFamily: "CircularStd",
+          padding: "10px 20px",
+          margin: "0 10px",
+          minWidth: "100px",
+          "&.Mui-selected": {
+            color: "white",
+            backgroundColor: "#6c8ccd",
+          },
         },
       },
     },
