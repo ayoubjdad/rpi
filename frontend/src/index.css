@@ -95,6 +95,10 @@ p {
   margin: 0;
 }
 
+i {
+  display: flex;
+}
+
 em {
   font-family: "CircularStd";
   font-weight: 400;

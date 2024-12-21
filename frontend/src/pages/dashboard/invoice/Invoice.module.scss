@@ -1,22 +1,22 @@
 .main {
-  // background-color: #e6e6e6;
-  background-color: white;
+  gap: 24px;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  // grid-template-columns: repeat(2, 1fr);
 }
 
 .container {
   gap: 24px;
   display: grid;
-  // margin: 20px;
-  form {
-    gap: 24px;
-    display: grid;
-    padding: 24px 0;
-    overflow: hidden;
-    display: grid;
-    border-radius: 16px;
-    box-shadow: rgba(145, 158, 171, 0.2) 0px 0px 2px 0px,
-      rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
-  }
+}
+
+.form {
+  padding-bottom: 60px;
+  gap: 16px;
+  display: grid;
+  height: 85vh;
+  overflow: scroll;
 }
 
 .header {
@@ -41,7 +41,7 @@
 }
 
 .from {
-  padding: 0 24px;
+  // padding: 0 24px;
   gap: 12px;
   display: grid;
 }
@@ -58,29 +58,21 @@
 }
 
 .invoiceInfos {
-  gap: 24px;
-  padding: 24px;
+  gap: 12px;
+  width: 100%;
   display: grid;
-  background-color: #f4f6f8;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .details {
-  gap: 24px;
-  padding: 0 24px;
+  gap: 12px;
+  width: 100%;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
 }
 
-.buttons {
-  gap: 12px;
-  display: flex;
-  padding: 0 24px;
-}
-
 .secondTitle {
-  padding: 0 24px;
-  color: #919eab;
+  color: #111111;
 }
 
 .addCustomer {
@@ -104,15 +96,13 @@
 .item {
   gap: 24px;
   display: grid;
-  padding: 0 24px;
   grid-template-columns: 2fr 1fr 1fr 1fr;
 }
 
 .total {
   gap: 16px;
   display: grid;
-  padding: 0 24px;
-  justify-content: end;
+  justify-content: start;
 }
 
 .totalItem {
@@ -123,4 +113,119 @@
 
 .secondary {
   color: #637381;
+}
+
+.bottom {
+  bottom: 0;
+  height: 60px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  padding-right: 24px;
+  justify-content: flex-end;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  width: -webkit-fill-available;
+}
+
+.buttons {
+  gap: 12px;
+  display: flex;
+}
+
+.link {
+  gap: 6px;
+  display: flex;
+  font-size: 18px;
+  color: #919eab;
+  align-items: center;
+}
+
+// * ==========================================================================
+// * Invoice Preview
+// * ==========================================================================
+
+.invoicePreview {
+  height: 100%;
+  width: calc(100% * 210 / 297); /* Maintain A4 aspect ratio */
+
+  gap: 24px;
+  display: grid;
+}
+
+.header {
+  display: grid;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafc;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.previewTitle {
+  color: #8f93a7;
+}
+
+.clientInfos,
+.invoiceNum {
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.invoiceNum {
+  align-items: flex-end;
+}
+
+.tableDetails {
+  gap: 16px;
+  display: grid;
+}
+
+.group {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  p:last-child {
+    text-align: right;
+  }
+}
+
+.divider {
+  width: -webkit-fill-available;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.summary {
+  gap: 16px;
+  display: grid;
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ttcGlobal {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.ttc {
+  gap: 100px;
+  padding: 12px;
+  display: flex;
+  min-width: fit-content;
+  border-radius: 8px;
+  background-color: #e5e7eb;
+}
+
+.footer {
+  display: grid;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafc;
 }

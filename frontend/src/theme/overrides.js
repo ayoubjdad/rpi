@@ -1,4 +1,4 @@
-import { colors, createTheme } from "@mui/material";
+import { createTheme } from "@mui/material";
 
 export const overrides = createTheme({
   palette: {
@@ -42,10 +42,11 @@ export const overrides = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
-          margin: "10px 0",
+          margin: 0,
           "& .MuiInputBase-root": {
             borderRadius: "8px",
             fontFamily: "CircularStd",
+            backgroundColor: "#f9fafc",
           },
         },
       },
@@ -55,8 +56,11 @@ export const overrides = createTheme({
     },
     MuiOutlinedInput: {
       styleOverrides: {
+        input: {
+          padding: "10px 12px",
+        },
         notchedOutline: {
-          borderColor: "rgba(0, 0, 0, 0.23)",
+          borderColor: "#e0e0e0",
         },
       },
     },
@@ -96,6 +100,23 @@ export const overrides = createTheme({
           "&.Mui-selected": {
             color: "white",
             backgroundColor: "#6c8ccd",
+          },
+        },
+      },
+    },
+
+    // * Autocomplete
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          "& .MuiFormControl-root": {
+            "& .MuiInputBase-root": {
+              padding: "10px 12px",
+              paddingRight: "12px !important",
+              "& .MuiInputBase-input": {
+                padding: 0,
+              },
+            },
           },
         },
       },

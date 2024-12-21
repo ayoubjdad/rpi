@@ -5,19 +5,15 @@ import axios from "axios";
 import { jsPDF } from "jspdf";
 import { useQuery } from "react-query";
 
-import {
-  Box,
-  Button,
-  Dialog,
-  TextField,
-  Autocomplete,
-  ThemeProvider,
-} from "@mui/material";
+import { Button, TextField, Autocomplete, ThemeProvider } from "@mui/material";
+
+import { makeStyles } from "@mui/styles";
 
 import { overrides } from "../../../theme/overrides";
 import { prixEnLettres } from "../../../helpers/function.helper";
 import { clients } from "../../../data/data";
 import { serverUrl } from "../../../config/config";
+import { palette } from "../../../theme/palette";
 
 const initialInvoiceValue = {
   invoiceId: Math.random(),
@@ -42,7 +38,18 @@ const options = {
   refetchOnWindowFocus: false,
 };
 
+const useStyles = makeStyles((theme) => ({
+  addItem: {
+    padding: "0px !important",
+    backgroundColor: "transparent !important",
+    "& .MuiButton-startIcon": {
+      marginLeft: "0px !important",
+    },
+  },
+}));
+
 const Invoice = () => {
+  const classes = useStyles();
   const { data: invoices } = useQuery("invoices", getInvoices, options);
 
   const [invoice, setInvoice] = useState({
@@ -206,7 +213,7 @@ const Invoice = () => {
       { align: "center" }
     );
 
-    // Save PDF
+    // * Save PDF
     // saveInvoice();
     doc.save(`facture_${invoice?.invoiceNumber || "exemple"}.pdf`);
   };
@@ -217,239 +224,273 @@ const Invoice = () => {
   );
 
   const totalTTC = totalHT * 1.2;
-  const totalEnLettres = prixEnLettres(totalHT * 1.2);
 
   return (
     <ThemeProvider theme={overrides}>
-      <Popup open={open} handleClose={handleClose} selectClient={setInvoice} />
-
       <div className={styles.main}>
-        <div className={styles.container}>
-          <form onSubmit={handleSaveAndDownload}>
-            <div className={styles.header}>
-              <div className={styles.headerFrom}>
-                <h2 className={styles.secondTitle}>De:</h2>
+        <form onSubmit={handleSaveAndDownload} className={styles.form}>
+          <Link />
+          <h2 className={styles.secondTitle}>Facture infos</h2>
+          <div className={styles.invoiceInfos}>
+            <TextField
+              placeholder="Numéro de facture"
+              name="invoiceNumber"
+              value={invoice.invoiceNumber}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              required
+            />
+            <TextField
+              placeholder="Date"
+              name="date"
+              value={invoice.date}
+              onChange={handleChange}
+              type="date"
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+              required
+            />
+            <Autocomplete
+              value={invoice.status}
+              options={["Payée", "En cours", "Annulée"]}
+              onChange={(_, value) =>
+                setInvoice((prev) => ({ ...prev, status: value }))
+              }
+              renderInput={(params) => (
+                <TextField {...params} placeholder="Statut" />
+              )}
+            />
+            <Autocomplete
+              value={invoice.status}
+              options={["Payée", "En cours", "Annulée"]}
+              onChange={(_, value) =>
+                setInvoice((prev) => ({ ...prev, status: value }))
+              }
+              renderInput={(params) => (
+                <TextField {...params} placeholder="Client" />
+              )}
+            />
+          </div>
 
-                <div className={styles.from}>
-                  <div>RGI Print</div>
-                  <div>19034 Verna Unions Apt. 164 - Honolulu, RI / 87535</div>
-                  <div>+212 707-220-199</div>
-                  <div>ICE: {clients[0].ICE}</div>
-                </div>
+          <h2 className={styles.secondTitle}>Add items</h2>
+          <div className={styles.details}>
+            <TextField
+              placeholder="Déscription"
+              name="description"
+              value={item.description}
+              onChange={handleItemChange}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              placeholder="Quantité"
+              name="quantity"
+              value={item.quantity}
+              onChange={handleItemChange}
+              type="number"
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              placeholder="Prix Unitaire (DH)"
+              name="price"
+              value={item.price}
+              onChange={handleItemChange}
+              type="number"
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              placeholder="Total (DH)"
+              name="totalPrice"
+              value={Number(item.price * item.quantity)}
+              type="number"
+              fullWidth
+              disabled
+              margin="normal"
+            />
+          </div>
+
+          <Button
+            className={classes.addItem}
+            onClick={addItem}
+            startIcon={<i className="fi fi-rr-add" />}
+          >
+            Ajouter un élément
+          </Button>
+
+          {!invoice.items?.length ? null : (
+            <>
+              <h2 className={styles.secondTitle}>Eléménts</h2>
+
+              <div className={styles.itemsList}>
+                {invoice.items.map((itm, index) => (
+                  <div key={index} className={styles.details}>
+                    <TextField
+                      disabled
+                      placeholder="Description"
+                      name="description"
+                      value={itm.description}
+                      fullWidth
+                    />
+                    <TextField
+                      disabled
+                      placeholder="Quantity"
+                      name="quantity"
+                      value={itm.quantity}
+                      type="number"
+                      fullWidth
+                    />
+                    <TextField
+                      disabled
+                      placeholder="Price"
+                      name="price"
+                      value={itm.price}
+                      type="number"
+                      fullWidth
+                    />
+                    <TextField
+                      disabled
+                      placeholder="Total"
+                      name="totalPrice"
+                      value={Number(itm.price * itm.quantity)?.toFixed(2)}
+                      type="number"
+                      fullWidth
+                    />
+                  </div>
+                ))}
               </div>
 
-              <div className={styles.headerTo}>
-                <div className={styles.headerToTop}>
-                  <h2 className={styles.secondTitle}>Client:</h2>
-                  <Box
-                    component="i"
-                    className={`fi fi-rr-plus ${styles.addCustomer}`}
-                    onClick={handleOpen}
-                  />
+              <div className={styles.total}>
+                <div className={styles.totalItem}>
+                  <p className={styles.secondary}>Total HT : </p>
+                  <p>{totalHT?.toFixed(2)} DH</p>
                 </div>
-
-                {client && (
-                  <div className={styles.from}>
-                    <div>{client?.customerName}</div>
-                    <div>
-                      {`${client?.address.street}, ${client?.address.city},  ${client?.address.country}`}
-                    </div>
-                    <div>{client?.phone}</div>
-                    <div>ICE: {client?.ICE}</div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className={styles.invoiceInfos}>
-              <TextField
-                label="Numéro de facture"
-                name="invoiceNumber"
-                value={invoice.invoiceNumber}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
-                required
-              />
-              <Autocomplete
-                value={invoice.status}
-                options={["Payée", "En cours", "Annulée"]}
-                onChange={(_, value) =>
-                  setInvoice((prev) => ({ ...prev, status: value }))
-                }
-                renderInput={(params) => (
-                  <TextField {...params} label="Statut" />
-                )}
-              />
-              <TextField
-                label="Date"
-                name="date"
-                value={invoice.date}
-                onChange={handleChange}
-                type="date"
-                fullWidth
-                margin="normal"
-                InputLabelProps={{ shrink: true }}
-                required
-              />
-            </div>
-
-            <h2 className={styles.secondTitle}>Détails:</h2>
-
-            <div className={styles.details}>
-              <TextField
-                label="Déscription"
-                name="description"
-                value={item.description}
-                onChange={handleItemChange}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Quantité"
-                name="quantity"
-                value={item.quantity}
-                onChange={handleItemChange}
-                type="number"
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Prix Unitaire (DH)"
-                name="price"
-                value={item.price}
-                onChange={handleItemChange}
-                type="number"
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Total (DH)"
-                name="totalPrice"
-                value={Number(item.price * item.quantity)}
-                type="number"
-                fullWidth
-                disabled
-                margin="normal"
-              />
-            </div>
-
-            <div className={styles.details}>
-              <Button
-                variant="contained"
-                onClick={addItem}
-                startIcon={<i className="fi fi-rr-plus-small" />}
-              >
-                Ajouter un élément
-              </Button>
-            </div>
-
-            {!invoice.items?.length ? null : (
-              <>
-                <h2 className={styles.secondTitle}>Eléménts:</h2>
-
-                <div className={styles.itemsList}>
-                  {invoice.items.map((itm, index) => (
-                    <div key={index} className={styles.item}>
-                      <TextField
-                        disabled
-                        label="Description"
-                        name="description"
-                        value={itm.description}
-                        fullWidth
-                      />
-                      <TextField
-                        disabled
-                        label="Quantity"
-                        name="quantity"
-                        value={itm.quantity}
-                        type="number"
-                        fullWidth
-                      />
-                      <TextField
-                        disabled
-                        label="Price"
-                        name="price"
-                        value={itm.price}
-                        type="number"
-                        fullWidth
-                      />
-                      <TextField
-                        disabled
-                        label="Total"
-                        name="totalPrice"
-                        value={Number(itm.price * itm.quantity)?.toFixed(2)}
-                        type="number"
-                        fullWidth
-                      />
-                    </div>
-                  ))}
+                <div className={styles.totalItem}>
+                  <p className={styles.secondary}>TVA : </p>
+                  <p>20%</p>
                 </div>
-
-                <div className={styles.total}>
-                  <div className={styles.totalItem}>
-                    <p className={styles.secondary}>Total HT : </p>
-                    <p>{totalHT?.toFixed(2)} DH</p>
-                  </div>
-                  <div className={styles.totalItem}>
-                    <p className={styles.secondary}>TVA : </p>
-                    <p>20%</p>
-                  </div>
-                  <div className={styles.totalItem}>
-                    <p style={{ fontWeight: 700, fontSize: "16px" }}>
-                      Total TTC :
-                    </p>
-                    <p style={{ fontWeight: 700, fontSize: "16px" }}>
-                      {totalTTC?.toFixed(2)} DH
-                    </p>
-                  </div>
-
+                <div className={styles.totalItem}>
                   <p style={{ fontWeight: 700, fontSize: "16px" }}>
-                    {totalEnLettres}
+                    Total TTC :
+                  </p>
+                  <p style={{ fontWeight: 700, fontSize: "16px" }}>
+                    {totalTTC?.toFixed(2)} DH
                   </p>
                 </div>
-              </>
-            )}
+              </div>
+            </>
+          )}
 
-            <div className={styles.buttons}>
-              <Button onClick={saveInvoice} variant="outlined">
-                Enregistrer
-              </Button>
+          <div className={styles.buttons}>
+            <Button onClick={saveInvoice} variant="outlined">
+              Enregistrer
+            </Button>
 
-              <Button type="submit" variant="contained">
-                Télécharger en PDF
-              </Button>
-            </div>
-          </form>
-        </div>
+            <Button type="submit" variant="contained">
+              Télécharger en PDF
+            </Button>
+          </div>
+        </form>
+        <InvoicePreview invoice={invoice} client={client} />
       </div>
     </ThemeProvider>
   );
 };
 
-const Popup = ({ open, handleClose, selectClient }) => {
-  const onChange = (value) => {
-    const client = clients.find((client) => client.customerName === value);
-    selectClient((prev) => ({ ...prev, clientId: client.id }));
-    handleClose();
-  };
+const InvoicePreview = ({ invoice, client }) => {
+  const totalHt = invoice?.items.reduce(
+    (sum, item) => sum + item.quantity * item.price,
+    0
+  );
+  const totalTva = totalHt * 0.2;
+  const totalTtc = totalHt * 1.2;
+  const totalEnLettres = prixEnLettres(totalTtc);
 
   return (
-    <Dialog onClose={handleClose} open={open}>
-      <div
-        style={{
-          gap: "12px",
-          display: "grid",
-        }}
-      >
-        <h3>Choisi un client</h3>
-        <Autocomplete
-          options={clients.map((client) => client.customerName)}
-          onChange={(_, value) => onChange(value)}
-          renderInput={(params) => <TextField {...params} label="Client" />}
-        />
+    <div className={styles.invoicePreview}>
+      <div className={styles.header}>
+        <h2>RGI Print</h2>
+        <div className={styles.invoiceNum}>
+          <p className={styles.previewTitle}>Facture n°</p>
+          <p>{invoice?.invoiceNumber || 1234}</p>
+        </div>
+        <div className={styles.clientInfos}>
+          <p className={styles.previewTitle}>Facturé à:</p>
+          <p>{client?.customerName || "John Doe"}</p>
+          <p>{client?.address?.street || "123 Main Street"}</p>
+          <p>ICE : {client?.ICE || "123456789"}</p>
+        </div>
+        <div className={styles.invoiceNum}>
+          <p className={styles.previewTitle}>Date de facturation</p>
+          <p>{invoice?.date || "2024-12-15"}</p>
+        </div>
       </div>
-    </Dialog>
+
+      <div className={styles.tableDetails}>
+        <div className={styles.group}>
+          <p>Déscription</p>
+          <p>Quantité</p>
+          <p>Prix Unitaire</p>
+          <p>Total</p>
+        </div>
+
+        <div className={styles.divider} />
+
+        {invoice?.items.map((item, index) => (
+          <div key={index} className={styles.group}>
+            <p>{item.description}</p>
+            <p>{item.quantity}</p>
+            <p>{item.price}</p>
+            <p>{item.price * item.quantity}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.divider} />
+
+      <div className={styles.summary}>
+        <div className={styles.summaryItem}>
+          <p className={styles.previewTitle}>Montant HT</p>
+          <p>{`${totalHt} DH`}</p>
+        </div>
+
+        <div className={styles.summaryItem}>
+          <p className={styles.previewTitle}>TVA (20%)</p>
+          <p>{`+ ${totalTva} DH`}</p>
+        </div>
+
+        <div className={styles.ttcGlobal}>
+          <div className={styles.divider} />
+          <div className={styles.ttc}>
+            <p className={styles.previewTitle}>Montant TTC :</p>
+            <p>{`${totalTtc} DH`}</p>
+          </div>
+        </div>
+
+        <p style={{ fontWeight: 700, fontSize: "16px" }}>{totalEnLettres}</p>
+      </div>
+
+      <div className={styles.footer}>
+        <p>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit.Aut adipisci
+          voluptate distinctio consectetur suscipit, quos facere voluptatibus
+          nulla, ea debitis minus dolores.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const Link = () => {
+  return (
+    <div className={styles.link}>
+      <p>All invoices</p>
+      <i class="fi fi-rr-angle-small-right" />
+      <p style={{ color: palette["darkest-gray"] }}>Create new invoice</p>
+    </div>
   );
 };
 
