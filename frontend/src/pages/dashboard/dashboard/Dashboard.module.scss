@@ -5,18 +5,18 @@
 }
 
 .sidebar {
-  width: 20%;
-  background-color: #f9fafc;
-  border-right: 1px solid #e0e0e0;
+  gap: 20px;
+  width: 25%;
+  padding: 20px;
   display: flex;
   flex-direction: column;
+  background-color: #f9fafc;
   justify-content: space-between;
+  border-right: 1px solid #e0e0e0;
 }
 
 .logo {
-  padding: 20px;
   font-weight: bold;
-  text-align: center;
   font-family: "CircularStd";
 }
 

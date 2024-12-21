@@ -38,11 +38,6 @@ function Dashboard() {
             <Tab label="Clients" />
           </Tabs>
         </ThemeProvider>
-        <Box className={styles.settings}>
-          <Button variant="text" className={styles.logout}>
-            Logout
-          </Button>
-        </Box>
       </Box>
 
       <Box className={styles.content}>{tabIndex === 0 && <Invoice />}</Box>

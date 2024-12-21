@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Invoice = () => {
   const classes = useStyles();
-  const { data: invoices } = useQuery("invoices", getInvoices, options);
+  // const { data: invoices } = useQuery("invoices", getInvoices, options);
 
   const [invoice, setInvoice] = useState({
     ...initialInvoiceValue,
@@ -62,14 +62,9 @@ const Invoice = () => {
     price: "",
   });
 
-  const [open, setOpen] = useState(false);
-
   const client = !invoice?.clientId
     ? null
     : clients.find((client) => client.id === invoice.clientId);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
 
   const saveInvoice = async (e) => {
     e?.preventDefault();
@@ -415,17 +410,17 @@ const InvoicePreview = ({ invoice, client }) => {
         <h2>RGI Print</h2>
         <div className={styles.invoiceNum}>
           <p className={styles.previewTitle}>Facture n°</p>
-          <p>{invoice?.invoiceNumber || 1234}</p>
+          <p>{invoice?.invoiceNumber || "#"}</p>
         </div>
         <div className={styles.clientInfos}>
           <p className={styles.previewTitle}>Facturé à:</p>
           <p>{client?.customerName || "John Doe"}</p>
           <p>{client?.address?.street || "123 Main Street"}</p>
-          <p>ICE : {client?.ICE || "123456789"}</p>
+          <p>ICE : {client?.ICE || "#"}</p>
         </div>
         <div className={styles.invoiceNum}>
           <p className={styles.previewTitle}>Date de facturation</p>
-          <p>{invoice?.date || "2024-12-15"}</p>
+          <p>{invoice?.date || "----/--/--"}</p>
         </div>
       </div>
 
@@ -470,7 +465,7 @@ const InvoicePreview = ({ invoice, client }) => {
           </div>
         </div>
 
-        <p style={{ fontWeight: 700, fontSize: "16px" }}>{totalEnLettres}</p>
+        <p>{totalEnLettres}</p>
       </div>
 
       <div className={styles.footer}>

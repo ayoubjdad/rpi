@@ -94,8 +94,9 @@ export const overrides = createTheme({
           textTransform: "none",
           alignItems: "flex-start",
           fontFamily: "CircularStd",
-          padding: "10px 20px",
-          margin: "0 10px",
+          padding: "10px 14px",
+          minHeight: 0,
+          margin: 0,
           minWidth: "100px",
           "&.Mui-selected": {
             color: "white",
