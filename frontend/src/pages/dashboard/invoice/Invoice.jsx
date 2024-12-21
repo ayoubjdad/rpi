@@ -40,7 +40,7 @@ const options = {
 
 const useStyles = makeStyles((theme) => ({
   addItem: {
-    padding: "0px !important",
+    padding: "0px 24px !important",
     backgroundColor: "transparent !important",
     "& .MuiButton-startIcon": {
       marginLeft: "0px !important",
@@ -316,77 +316,58 @@ const Invoice = () => {
             Ajouter un élément
           </Button>
 
+          <h2 className={styles.secondTitle}>Eléménts</h2>
+
           {!invoice.items?.length ? null : (
-            <>
-              <h2 className={styles.secondTitle}>Eléménts</h2>
-
-              <div className={styles.itemsList}>
-                {invoice.items.map((itm, index) => (
-                  <div key={index} className={styles.details}>
-                    <TextField
-                      disabled
-                      placeholder="Description"
-                      name="description"
-                      value={itm.description}
-                      fullWidth
-                    />
-                    <TextField
-                      disabled
-                      placeholder="Quantity"
-                      name="quantity"
-                      value={itm.quantity}
-                      type="number"
-                      fullWidth
-                    />
-                    <TextField
-                      disabled
-                      placeholder="Price"
-                      name="price"
-                      value={itm.price}
-                      type="number"
-                      fullWidth
-                    />
-                    <TextField
-                      disabled
-                      placeholder="Total"
-                      name="totalPrice"
-                      value={Number(itm.price * itm.quantity)?.toFixed(2)}
-                      type="number"
-                      fullWidth
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className={styles.total}>
-                <div className={styles.totalItem}>
-                  <p className={styles.secondary}>Total HT : </p>
-                  <p>{totalHT?.toFixed(2)} DH</p>
+            <div className={styles.itemsList}>
+              {invoice.items.map((itm, index) => (
+                <div key={index} className={styles.details}>
+                  <TextField
+                    disabled
+                    placeholder="Description"
+                    name="description"
+                    value={itm.description}
+                    fullWidth
+                  />
+                  <TextField
+                    disabled
+                    placeholder="Quantity"
+                    name="quantity"
+                    value={itm.quantity}
+                    type="number"
+                    fullWidth
+                  />
+                  <TextField
+                    disabled
+                    placeholder="Price"
+                    name="price"
+                    value={itm.price}
+                    type="number"
+                    fullWidth
+                  />
+                  <TextField
+                    disabled
+                    placeholder="Total"
+                    name="totalPrice"
+                    value={Number(itm.price * itm.quantity)?.toFixed(2)}
+                    type="number"
+                    fullWidth
+                  />
                 </div>
-                <div className={styles.totalItem}>
-                  <p className={styles.secondary}>TVA : </p>
-                  <p>20%</p>
-                </div>
-                <div className={styles.totalItem}>
-                  <p style={{ fontWeight: 700, fontSize: "16px" }}>
-                    Total TTC :
-                  </p>
-                  <p style={{ fontWeight: 700, fontSize: "16px" }}>
-                    {totalTTC?.toFixed(2)} DH
-                  </p>
-                </div>
-              </div>
-            </>
+              ))}
+            </div>
           )}
 
-          <div className={styles.buttons}>
-            <Button onClick={saveInvoice} variant="outlined">
-              Enregistrer
-            </Button>
+          <div className={styles.bottom}>
+            <div className={styles.buttons}>
+              <Button onClick={saveInvoice} variant="outlined">
+                Enregistrer
+              </Button>
 
-            <Button type="submit" variant="contained">
-              Télécharger en PDF
-            </Button>
+              <Button type="submit" variant="contained">
+                Télécharger en PDF
+              </Button>
+            </div>
           </div>
         </form>
         <InvoicePreview invoice={invoice} client={client} />
@@ -396,13 +377,12 @@ const Invoice = () => {
 };
 
 const InvoicePreview = ({ invoice, client }) => {
-  const totalHt = invoice?.items.reduce(
-    (sum, item) => sum + item.quantity * item.price,
-    0
-  );
-  const totalTva = totalHt * 0.2;
-  const totalTtc = totalHt * 1.2;
-  const totalEnLettres = prixEnLettres(totalTtc);
+  const totalHt = invoice?.items
+    .reduce((sum, item) => sum + item.quantity * item.price, 0)
+    ?.toFixed(2);
+  const totalTva = (totalHt * 0.2)?.toFixed(2);
+  const totalTtc = (totalHt * 1.2)?.toFixed(2);
+  const totalEnLettres = prixEnLettres(Number(totalTtc));
 
   return (
     <div className={styles.invoicePreview}>
@@ -449,19 +429,19 @@ const InvoicePreview = ({ invoice, client }) => {
       <div className={styles.summary}>
         <div className={styles.summaryItem}>
           <p className={styles.previewTitle}>Montant HT</p>
-          <p>{`${totalHt} DH`}</p>
+          <p>{`${totalHt}DH`}</p>
         </div>
 
         <div className={styles.summaryItem}>
           <p className={styles.previewTitle}>TVA (20%)</p>
-          <p>{`+ ${totalTva} DH`}</p>
+          <p>{`+ ${totalTva}DH`}</p>
         </div>
 
         <div className={styles.ttcGlobal}>
           <div className={styles.divider} />
           <div className={styles.ttc}>
             <p className={styles.previewTitle}>Montant TTC :</p>
-            <p>{`${totalTtc} DH`}</p>
+            <p>{`${totalTtc}DH`}</p>
           </div>
         </div>
 
