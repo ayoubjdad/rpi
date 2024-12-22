@@ -1,0 +1,48 @@
+.main {
+  padding: 24px;
+}
+
+.form {
+  gap: 24px;
+  display: grid;
+  overflow: hidden;
+  height: fit-content;
+}
+
+.clientInfos {
+  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.address {
+  gap: 12px;
+  display: grid;
+  grid-template-columns: 3fr repeat(2, 1fr);
+}
+
+.secondTitle {
+  color: #111111;
+  height: fit-content;
+}
+
+.bottom {
+  bottom: 0;
+  height: 60px;
+  display: flex;
+  position: absolute;
+  align-items: center;
+  padding: 12px 24px 12px 0;
+  justify-content: flex-end;
+  background-color: white;
+  border-top: 1px solid #e0e0e0;
+  width: -webkit-fill-available;
+}
+
+.link {
+  gap: 6px;
+  display: flex;
+  font-size: 18px;
+  color: #919eab;
+  align-items: center;
+}

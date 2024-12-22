@@ -21,9 +21,9 @@ export const overrides = createTheme({
       styleOverrides: {
         root: {
           boxShadow: "none",
-          borderRadius: "68px",
+          borderRadius: "8px",
           width: "fit-content",
-          padding: "10px 20px",
+          padding: "10px 16px",
           textTransform: "none",
           fontFamily: "CircularStd",
           backgroundColor: "#111111",
@@ -88,16 +88,16 @@ export const overrides = createTheme({
     MuiTab: {
       styleOverrides: {
         root: {
-          fontWeight: 700,
+          margin: 0,
+          minHeight: 0,
+          fontWeight: 400,
+          minWidth: "100px",
           textAlign: "left",
           borderRadius: "8px",
+          padding: "14px 20px",
           textTransform: "none",
           alignItems: "flex-start",
           fontFamily: "CircularStd",
-          padding: "10px 14px",
-          minHeight: 0,
-          margin: 0,
-          minWidth: "100px",
           "&.Mui-selected": {
             color: "white",
             backgroundColor: "#6c8ccd",

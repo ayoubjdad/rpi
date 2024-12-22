@@ -1,17 +1,9 @@
 import React, { useState } from "react";
-import {
-  Tabs,
-  Tab,
-  Box,
-  Typography,
-  Button,
-  TextField,
-  Divider,
-  ThemeProvider,
-} from "@mui/material";
+import { Tabs, Tab, Box, Typography, ThemeProvider } from "@mui/material";
 import styles from "./Dashboard.module.scss";
 import Invoice from "../invoice/Invoice";
 import { overrides } from "../../../theme/overrides";
+import Client from "../client/Client";
 
 function Dashboard() {
   const [tabIndex, setTabIndex] = useState(0);
@@ -40,7 +32,16 @@ function Dashboard() {
         </ThemeProvider>
       </Box>
 
-      <Box className={styles.content}>{tabIndex === 0 && <Invoice />}</Box>
+      {tabIndex === 0 && (
+        <Box className={styles.content}>
+          <Invoice />
+        </Box>
+      )}
+      {tabIndex === 2 && (
+        <Box className={styles.content}>
+          <Client />
+        </Box>
+      )}
     </Box>
   );
 }

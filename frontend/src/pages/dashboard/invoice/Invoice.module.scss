@@ -63,11 +63,27 @@
   grid-template-columns: repeat(2, 1fr);
 }
 
-.details {
+.details,
+.detailsElements {
   gap: 12px;
   display: grid;
   padding: 0 24px;
   grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+
+.detailsElements {
+  grid-template-columns: 2fr 1fr 1fr 1fr 0.4fr;
+}
+
+.removeItem {
+  cursor: pointer;
+  font-size: 18px;
+  color: #e82929;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e82929;
+  background-color: rgb(250, 197, 197);
 }
 
 .secondTitle {
@@ -123,7 +139,7 @@
   display: flex;
   position: absolute;
   align-items: center;
-  padding-right: 24px;
+  padding: 12px 24px 12px 0;
   justify-content: flex-end;
   background-color: white;
   border-top: 1px solid #e0e0e0;
