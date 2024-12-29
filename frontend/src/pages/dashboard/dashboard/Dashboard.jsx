@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Tabs, Tab, Box, Typography, ThemeProvider } from "@mui/material";
+import { Tabs, Tab, Box, ThemeProvider } from "@mui/material";
 import styles from "./Dashboard.module.scss";
 import Invoice from "../invoice/Invoice";
 import { overrides } from "../../../theme/overrides";
 import Client from "../client/Client";
+import logo from "../../../assets/images/logo.png";
 
 function Dashboard() {
   const [tabIndex, setTabIndex] = useState(0);
@@ -15,9 +16,7 @@ function Dashboard() {
   return (
     <Box className={styles.dashboard}>
       <Box className={styles.sidebar}>
-        <Typography variant="h6" className={styles.logo}>
-          RGI Studio
-        </Typography>
+        <img src={logo} alt="RgiStudio" className={styles.logo} />
         <ThemeProvider theme={overrides}>
           <Tabs
             orientation="vertical"

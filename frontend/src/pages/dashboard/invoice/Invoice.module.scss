@@ -1,9 +1,7 @@
 .main {
   gap: 24px;
-  // padding: 24px;
   display: flex;
   justify-content: space-between;
-  // grid-template-columns: repeat(2, 1fr);
 }
 
 .container {
@@ -75,11 +73,20 @@
   grid-template-columns: 2fr 1fr 1fr 1fr 0.4fr;
 }
 
+.removeItemContainer {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .removeItem {
+  width: 24px;
+  height: 24px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 12px;
   color: #e82929;
-  border-radius: 8px;
+  border-radius: 80px;
   align-items: center;
   justify-content: center;
   border: 1px solid #e82929;
@@ -87,6 +94,7 @@
 }
 
 .secondTitle {
+  font-size: 18px;
   color: #111111;
   padding: 0 24px;
   height: fit-content;
@@ -141,8 +149,8 @@
   align-items: center;
   padding: 12px 24px 12px 0;
   justify-content: flex-end;
-  background-color: white;
-  border-top: 1px solid #e0e0e0;
+  background-color: #fff;
+  border-top: 1px solid #929296;
   width: -webkit-fill-available;
 }
 
@@ -154,10 +162,9 @@
 .link {
   gap: 6px;
   display: flex;
-  padding: 24px 24px 0 24px;
-  font-size: 18px;
-  color: #919eab;
+  color: #929296;
   align-items: center;
+  padding: 24px 24px 0 24px;
 }
 
 // * ==========================================================================
@@ -166,11 +173,8 @@
 
 .invoicePreview {
   gap: 24px;
-  height: 100%;
-  margin: 12px;
   padding: 24px;
   display: grid;
-  border-radius: 16px;
   width: calc(100% * 210 / 297); /* Maintain A4 aspect ratio */
   box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.1);
 }

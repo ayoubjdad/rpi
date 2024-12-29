@@ -127,99 +127,158 @@ const Invoice = () => {
     }));
   };
 
+  const getAddress = (address) => {
+    if (!address) return "";
+
+    const { street, city, country } = address;
+
+    if (!street && !city && !country) return "";
+
+    let result = "";
+
+    if (street) {
+      result += `${street}`;
+    }
+
+    if (city) {
+      result += `, ${city}`;
+    }
+
+    if (country) {
+      result += `, ${country}`;
+    }
+
+    return result;
+  };
+
+  const addressForm = getAddress(client?.address);
+
   const handleSaveAndDownload = (e) => {
     e.preventDefault();
 
     const doc = new jsPDF();
 
+    doc.setFillColor(249, 250, 252);
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(10, 10, 190, 58, 2, 2, "FD"); // FD = Fill and Draw
+
     // --- Invoice Title and Company Logo ---
     doc.setFontSize(24);
-    doc.text("RGI Print", 20, 20); // Aligned with the image
+    doc.text("RGI Print", 17, 23); // Aligned with the image
 
     // --- Invoice Information (Right Aligned) ---
-    doc.setFontSize(10);
-    doc.text(`Facture n°: ${invoice?.invoiceNumber || "22"}`, 185, 40, {
-      align: "right",
-    });
-    doc.text(`Date de facturation: ${invoice?.date || "2024-12-15"}`, 185, 45, {
-      align: "right",
-    });
-    doc.text(`Motif: ${invoice?.notes || "Décoration florale"}`, 185, 50, {
-      align: "right",
-    });
+    doc.setFontSize(12);
+    doc.setTextColor(143, 147, 167);
+    doc.text(`Facture n°`, 193, 20, { align: "right" });
+    doc.setTextColor(0, 0, 0);
+    doc.text(`${invoice?.invoiceNumber || "22"}`, 193, 27, { align: "right" });
+
+    doc.setTextColor(143, 147, 167);
+    doc.text(`Date de facturation`, 193, 40, { align: "right" });
+    doc.setTextColor(0, 0, 0);
+    doc.text(`${invoice?.date || "2024-12-15"}`, 193, 47, { align: "right" });
+    // doc.text(`Motif: ${invoice?.notes || "Décoration florale"}`, 193, 30, {
+    //   align: "right",
+    // });
 
     // --- Billing Details ---
-    doc.setFontSize(12);
-    doc.text("Facturé à:", 20, 80);
-    doc.setFontSize(10);
-    doc.text(`Nom: ${client?.customerName}`, 20, 85);
-    doc.text(`Adresse: ${client?.address?.street}`, 20, 90);
-    doc.text(`ICE: ${client?.ICE}`, 20, 95);
+    doc.setTextColor(143, 147, 167);
+    doc.text("Facturé à", 17, 40);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`${client?.customerName}`, 17, 47);
+    doc.text(addressForm, 17, 54);
+    doc.text(`ICE: ${client?.ICE}`, 17, addressForm ? 61 : 54);
 
     // --- Table Headers (Light Gray Background) ---
-    const tableHeaderY = 120;
-    doc.setFillColor(200, 200, 200); // Light gray
-    doc.rect(20, tableHeaderY, 170, 10, "F");
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0); // Black text on gray background
-    doc.text("Description", 25, tableHeaderY + 7);
-    doc.text("Quantité", 100, tableHeaderY + 7, { align: "center" });
-    doc.text("Prix Unitaire (DH)", 130, tableHeaderY + 7, { align: "center" });
-    doc.text("Prix Total (DH)", 180, tableHeaderY + 7, { align: "right" });
+    const tableHeaderY = 80;
+
+    doc.setDrawColor(229, 231, 235); // Light gray (e5e7eb)
+    doc.setLineWidth(0.2); // 0.2 units for 1px equivalent in jsPDF
+    doc.line(10, tableHeaderY + 10, 200, tableHeaderY + 10); // Draw the bottom border line
+
+    // Set text color and add text
+    doc.setTextColor(0, 0, 0); // Black text
+    doc.text("Description", 10, tableHeaderY + 6);
+    doc.text("Quantité", 95, tableHeaderY + 6);
+    doc.text("Prix Unitaire", 125, tableHeaderY + 6);
+    doc.text("Total", 200, tableHeaderY + 6, { align: "right" });
 
     // --- Table Items ---
-    let tableY = tableHeaderY + 16;
+    let tableY = tableHeaderY + 18;
     invoice?.items.forEach((item) => {
-      doc.text(item.description || "Description", 25, tableY);
-      doc.text(String(item.quantity || 0), 100, tableY, { align: "center" });
-      doc.text(`${Number(item.price)?.toFixed(2)}`, 130, tableY, {
-        align: "center",
-      });
+      doc.text(item.description || "Description", 10, tableY);
+      doc.text(String(item.quantity || 0), 95, tableY);
+      doc.text(`${Number(item.price)?.toFixed(2)}`, 125, tableY);
       const price = Number(item.quantity) * Number(item.price);
-      doc.text(`${Number(price)?.toFixed(2)}`, 180, tableY, { align: "right" });
+      doc.text(`${Number(price)?.toFixed(2)}`, 200, tableY, { align: "right" });
       tableY += 10;
     });
 
+    doc.line(10, tableY, 200, tableY); // Draw the bottom border line
+    tableY += 10;
+
     // --- Summary Section ---
     doc.setFontSize(12);
-    doc.text("Montant HT :", 20, tableY + 10);
-    let totalHT = 0;
-    invoice.items.forEach((item) => (totalHT += item.quantity * item.price));
-    doc.text(`${totalHT} DH`, 60, tableY + 10);
 
-    doc.text("TVA :", 20, tableY + 17);
-    doc.text(`${invoice?.TVA}%`, 60, tableY + 17, { align: "left" });
+    const totalHt =
+      invoice?.items
+        .reduce((sum, item) => sum + item.quantity * item.price, 0)
+        ?.toFixed(2) || 0.0;
+    const totalTva = (totalHt * 0.2)?.toFixed(2) || 0.0;
+    const totalTtc = (totalHt * 1.2)?.toFixed(2) || 0.0;
+    const totalEnLettres = prixEnLettres(Number(totalTtc));
 
-    doc.text("Montant TTC :", 20, tableY + 24);
-    const totalTTC = totalHT + (totalHT * invoice.TVA) / 100;
-    doc.text(`${totalTTC.toFixed(2)} DH`, 60, tableY + 24, { align: "left" });
+    doc.setTextColor(143, 147, 167);
+    doc.text("Montant HT", 10, tableY + 10);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`${totalHt}DH`, 200, tableY + 10, { align: "right" });
 
-    doc.text(
-      "six-cent-quatre-vingt-cinq dirhams et vingt centimes",
-      20,
-      tableY + 31,
-      { align: "left" }
-    ); // Example
+    doc.setTextColor(143, 147, 167);
+    doc.text("TVA", 10, tableY + 17);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`+${totalTva}DH`, 200, tableY + 17, { align: "right" });
+
+    doc.line(10, tableY + 29, 140, tableY + 29);
+
+    doc.setFillColor(249, 250, 252);
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.2); // 0.2 units for 1px equivalent in jsPDF
+
+    doc.roundedRect(120, tableY + 24, 80, 10, 2, 2, "FD");
+
+    doc.setTextColor(143, 147, 167);
+    doc.text("Montant TTC", 125, tableY + 30.5);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`${totalTtc}DH`, 195, tableY + 30.5, { align: "right" });
+
+    doc.text(totalEnLettres, 10, tableY + 40, { align: "left" });
 
     // --- Footer Notes ---
-    const footerY = 275; // Place footer at the bottom
+    const footerY = 262; // Place footer at the bottom
+
+    doc.setFillColor(249, 250, 252);
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(10, footerY, 190, 25, 2, 2, "FD"); // FD = Fill and Draw
+
     doc.setFontSize(10);
     doc.text(
       "Veuillez libeller tous les chèques à l'ordre de RGI Print.",
       105,
-      footerY,
+      footerY + 9,
       { align: "center" }
     );
     doc.text(
       "Paiement total dû sous 90 jours. Comptes en retard soumis à des frais de service de 1,5% par mois.",
       105,
-      footerY + 5,
+      footerY + 14,
       { align: "center" }
     );
     doc.text(
       "rgi.print@example.com | www.siteinteressant.com",
       105,
-      footerY + 10,
+      footerY + 19,
       { align: "center" }
     );
 
@@ -367,11 +426,13 @@ const Invoice = () => {
                     type="number"
                     fullWidth
                   />
-                  <Box
-                    component="i"
-                    className={`fi fi-rr-trash ${styles.removeItem}`}
-                    onClick={() => removeItem(index)}
-                  />
+                  <div className={styles.removeItemContainer}>
+                    <Box
+                      component="i"
+                      className={`fi fi-rr-trash ${styles.removeItem}`}
+                      onClick={() => removeItem(index)}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -389,45 +450,23 @@ const Invoice = () => {
             </div>
           </div>
         </form>
-        <InvoicePreview invoice={invoice} client={client} />
+        <InvoicePreview
+          invoice={invoice}
+          client={client}
+          addressForm={addressForm}
+        />
       </div>
     </ThemeProvider>
   );
 };
 
-const getAddress = (address) => {
-  if (!address) return "";
-
-  const { street, city, country } = address;
-
-  if (!street && !city && !country) return "";
-
-  let result = "";
-
-  if (street) {
-    result += `${street}`;
-  }
-
-  if (city) {
-    result += `, ${city}`;
-  }
-
-  if (country) {
-    result += `, ${country}`;
-  }
-
-  return result;
-};
-
-const InvoicePreview = ({ invoice, client }) => {
+const InvoicePreview = ({ invoice, client, addressForm }) => {
   const totalHt = invoice?.items
     .reduce((sum, item) => sum + item.quantity * item.price, 0)
     ?.toFixed(2);
   const totalTva = (totalHt * 0.2)?.toFixed(2);
   const totalTtc = (totalHt * 1.2)?.toFixed(2);
   const totalEnLettres = prixEnLettres(Number(totalTtc));
-
-  const addressForm = getAddress(client?.address);
 
   return (
     <div className={styles.invoicePreview}>
@@ -509,7 +548,7 @@ const Link = () => {
     <div className={styles.link}>
       <p>All invoices</p>
       <i class="fi fi-rr-angle-small-right" />
-      <p style={{ color: palette["darkest-gray"] }}>Create new invoice</p>
+      <p style={{ color: "#111111" }}>Create new invoice</p>
     </div>
   );
 };

@@ -21,11 +21,11 @@ export const overrides = createTheme({
       styleOverrides: {
         root: {
           boxShadow: "none",
-          borderRadius: "8px",
+          borderRadius: "80px",
           width: "fit-content",
-          padding: "10px 16px",
+          padding: "10px 18px",
           textTransform: "none",
-          fontFamily: "CircularStd",
+          fontFamily: "AtAero",
           backgroundColor: "#111111",
         },
         outlined: {
@@ -44,15 +44,15 @@ export const overrides = createTheme({
         root: {
           margin: 0,
           "& .MuiInputBase-root": {
-            borderRadius: "8px",
-            fontFamily: "CircularStd",
-            backgroundColor: "#f9fafc",
+            borderRadius: "80px",
+            fontFamily: "AtAero",
+            backgroundColor: "#fff",
           },
         },
       },
     },
     MuiInputLabel: {
-      styleOverrides: { root: { fontFamily: "CircularStd", fontWeight: 300 } },
+      styleOverrides: { root: { fontFamily: "AtAero", fontWeight: 300 } },
     },
     MuiOutlinedInput: {
       styleOverrides: {
@@ -60,7 +60,7 @@ export const overrides = createTheme({
           padding: "10px 12px",
         },
         notchedOutline: {
-          borderColor: "#e0e0e0",
+          borderColor: "#929296",
         },
       },
     },
@@ -91,16 +91,17 @@ export const overrides = createTheme({
           margin: 0,
           minHeight: 0,
           fontWeight: 400,
+          fontSize: "14px",
           minWidth: "100px",
           textAlign: "left",
-          borderRadius: "8px",
-          padding: "14px 20px",
+          borderRadius: "60px",
+          padding: "10px 18px",
           textTransform: "none",
           alignItems: "flex-start",
-          fontFamily: "CircularStd",
+          fontFamily: "AtAero",
           "&.Mui-selected": {
-            color: "white",
-            backgroundColor: "#6c8ccd",
+            color: "#fff",
+            backgroundColor: "#111111",
           },
         },
       },
