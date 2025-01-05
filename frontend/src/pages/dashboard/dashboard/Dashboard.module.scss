@@ -1,81 +1,106 @@
-.dashboard {
-  display: flex;
-  height: 100vh;
-  background-color: #ffffff;
+.main {
+  gap: 24px;
+  padding: 24px;
+  display: grid;
 }
 
-.sidebar {
-  gap: 20px;
-  width: 15%;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  background-color: #e6e6e6;
-  justify-content: space-between;
-  border-right: 1px solid #929296;
-}
-
-.logo {
-  width: 60%;
-}
-
-.tabs {
-  flex-grow: 1;
-}
-
-.settings {
-  padding: 20px;
-}
-
-.logout {
-  color: #f44336;
-}
-
-.content {
+.container {
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  // flex-grow: 1;
-  // padding: 20px;
-}
-
-.invoiceSection {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.invoiceForm {
   display: flex;
-  gap: 20px;
+  border-radius: 12px;
+  flex-direction: column;
+  border: 1px solid #e8e9eb;
+  background-color: #f8fafb;
+  justify-content: space-between;
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.05);
 }
 
-.form {
-  flex: 2;
+.header {
+  padding: 12px;
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  justify-content: space-between;
+
+  // p {
+  //   font-size: 14px;
+  //   font-weight: bold;
+  //   color: #374151;
+  // }
+
+  i {
+    color: #7f8695;
+    cursor: pointer;
+  }
 }
 
 .preview {
-  flex: 1;
-  background: #f5f5f5;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  gap: 12px;
+  display: grid;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: #fff;
+  border-top: 1px solid #e8e9eb;
 }
 
-.previewBox {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  padding: 10px;
-  border-radius: 8px;
+.balance {
+  font-size: 32px;
+  font-weight: 500;
+
+  span {
+    font-size: 16px;
+    color: #7f8695;
+  }
 }
 
-.tabLabel {
-  gap: 8px;
+.footer {
   display: flex;
-  font-weight: 400;
+  justify-content: space-between;
   align-items: center;
-  i {
-    font-size: 18px;
+
+  p {
+    font-size: 14px;
+    color: #7f8695;
+  }
+
+  .percentage {
+    display: flex;
+    font-size: 14px;
+    color: #5eb493;
+    padding: 2px 6px;
+    font-weight: 500;
+    align-items: center;
+    border-radius: 60px;
+    background-color: #ebf6f3;
+
+    &::before {
+      content: "▲";
+      font-size: 12px;
+      margin-right: 4px;
+    }
+  }
+}
+
+.invoicesTable {
+  padding: 16px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid #e8e9eb;
+}
+
+.icon {
+  padding: 6px;
+  cursor: pointer;
+  width: fit-content;
+  border-radius: 6px;
+  &:hover {
+    background-color: #e8e9eb;
+  }
+}
+
+.delete {
+  color: #d83b3b;
+  &:hover {
+    background-color: #fcebeb;
   }
 }

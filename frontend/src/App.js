@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import Dashboard from "./pages/dashboard/dashboard/Dashboard";
 import { DataContext } from "./context/DataProvider";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 export default function App() {
   const { fetched } = useContext(DataContext);

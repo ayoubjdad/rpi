@@ -1,159 +1,76 @@
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Air.otf") format("opentype");
-  font-weight: 100;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Thin.otf") format("opentype");
-  font-weight: 200;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Light.otf") format("opentype");
-  font-weight: 300;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Retina.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Regular.otf") format("opentype");
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Medium.otf") format("opentype");
-  font-weight: 600;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Semibold.otf") format("opentype");
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Bold.otf") format("opentype");
-  font-weight: 800;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Black.otf") format("opentype");
-  font-weight: 900;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "AtAero";
-  src: url("./assets/fonts/AtAero-Super.otf") format("opentype");
-  font-weight: 950;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-Black.otf") format("opentype");
-  font-weight: 900; /* Black */
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-BlackItalic.otf") format("opentype");
-  font-weight: 900; /* Black */
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-Bold.otf") format("opentype");
-  font-weight: 700; /* Bold */
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-BoldItalic.otf") format("opentype");
-  font-weight: 700; /* Bold */
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-Book.otf") format("opentype");
-  font-weight: 400; /* Normal */
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-BookItalic.otf") format("opentype");
-  font-weight: 400; /* Normal */
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-Light.otf") format("opentype");
-  font-weight: 300; /* Light */
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-Light Italic.otf") format("opentype");
-  font-weight: 300; /* Light */
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-Medium.otf") format("opentype");
-  font-weight: 500; /* Medium */
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "CircularStd";
-  src: url("./assets/fonts/CircularStd-MediumItalic.otf") format("opentype");
-  font-weight: 500; /* Medium */
-  font-style: italic;
-}
-
 @import url("https://cdn-uicons.flaticon.com/2.6.0/uicons-thin-rounded/css/uicons-thin-rounded.css");
 @import url("https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css");
 @import url("https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css");
 @import url("https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css");
 
+@font-face {
+  font-family: "HelveticaNowText";
+  src: url("./assets/fonts/HelveticaNowText-Black.ttf") format("truetype");
+  font-weight: 900; /* Black */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HelveticaNowText";
+  src: url("./assets/fonts/HelveticaNowText-Bold.ttf") format("truetype");
+  font-weight: 700; /* Bold */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HelveticaNowText";
+  src: url("./assets/fonts/HelveticaNowText-ExtraBold.ttf") format("truetype");
+  font-weight: 800; /* Extra Bold */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HelveticaNowText";
+  src: url("./assets/fonts/HelveticaNowText-ExtraLight.ttf") format("truetype");
+  font-weight: 200; /* Extra Light */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HelveticaNowText";
+  src: url("./assets/fonts/HelveticaNowText-Light.ttf") format("truetype");
+  font-weight: 300; /* Light */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HelveticaNowText";
+  src: url("./assets/fonts/HelveticaNowText-Medium.ttf") format("truetype");
+  font-weight: 500; /* Medium */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HelveticaNowText";
+  src: url("./assets/fonts/HelveticaNowText-Regular.ttf") format("truetype");
+  font-weight: 400; /* Regular */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HelveticaNowText";
+  src: url("./assets/fonts/HelveticaNowText-Thin.ttf") format("truetype");
+  font-weight: 100; /* Thin */
+  font-style: normal;
+}
+
 body {
   margin: 0;
   font-size: 14px;
   font-weight: 400;
-  color: #111111;
-  font-family: "AtAero", sans-serif;
+  color: #353537;
+  font-family: "HelveticaNowText", sans-serif;
 }
 
 h1 {
+  line-height: 1;
   font-weight: 700;
-  font-family: "AtAero";
+  font-family: "HelveticaNowText";
 }
 
 h1,
@@ -171,7 +88,7 @@ i {
 }
 
 em {
-  font-family: "CircularStd";
+  font-family: "HelveticaNowText";
   font-weight: 400;
   font-style: italic;
 }

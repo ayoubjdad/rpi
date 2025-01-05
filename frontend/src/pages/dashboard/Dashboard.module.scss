@@ -1,0 +1,80 @@
+.dashboard {
+  display: flex;
+  height: 100vh;
+  background-color: #f6f8fa;
+}
+
+.sidebar {
+  gap: 20px;
+  width: 15%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.logo {
+  width: 60%;
+}
+
+.tabs {
+  flex-grow: 1;
+}
+
+.settings {
+  padding: 20px;
+}
+
+.logout {
+  color: #f44336;
+}
+
+.content {
+  width: 100%;
+  margin: 6px;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: #fff;
+  border: 1px solid #e8e9eb;
+}
+
+.invoiceSection {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.invoiceForm {
+  display: flex;
+  gap: 20px;
+}
+
+.form {
+  flex: 2;
+}
+
+.preview {
+  flex: 1;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.previewBox {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.tabLabel {
+  gap: 8px;
+  display: flex;
+  font-weight: 400;
+  align-items: center;
+  i {
+    font-size: 18px;
+  }
+}

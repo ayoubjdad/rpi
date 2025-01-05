@@ -6,11 +6,11 @@ import { jsPDF } from "jspdf";
 import { useQueryClient } from "react-query";
 
 import {
+  Box,
   Button,
   TextField,
   Autocomplete,
   ThemeProvider,
-  Box,
 } from "@mui/material";
 
 import { makeStyles } from "@mui/styles";
@@ -18,10 +18,10 @@ import { makeStyles } from "@mui/styles";
 import { overrides } from "../../../theme/overrides";
 import { prixEnLettres } from "../../../helpers/function.helper";
 import { serverUrl } from "../../../config/config";
-import { palette } from "../../../theme/palette";
 
 const useStyles = makeStyles((theme) => ({
   addItem: {
+    color: "#3240fe !important",
     padding: "0px 24px !important",
     backgroundColor: "transparent !important",
     "& .MuiButton-startIcon": {
@@ -43,11 +43,7 @@ const Invoice = () => {
     invoiceNumber: invoiceNumber,
     date: "",
     clientId: "",
-    items: [
-      { description: "Déscription", quantity: 1, price: 10 },
-      { description: "Déscription", quantity: 1, price: 10 },
-      { description: "Déscription", quantity: 1, price: 10 },
-    ],
+    items: [],
     totalHT: 0,
     TVA: 20,
     notes: "",
@@ -69,16 +65,29 @@ const Invoice = () => {
     : clients.find((client) => client.id === invoice.clientId);
 
   const clientsList =
-    clients.map((client) => ({
-      label: client.customerName,
-      id: client.id,
-    })) || [];
+    clients
+      .filter((client) => client.customerName)
+      .map((client) => ({
+        label: client.customerName,
+        id: client.id,
+      })) || [];
 
   const saveInvoice = async (e) => {
     e?.preventDefault();
 
     try {
-      const response = await axios.post(`${serverUrl}/invoices`, invoice);
+      const totalHT =
+        invoice?.items.reduce(
+          (sum, item) => sum + item.quantity * item.price,
+          0
+        ) || 0;
+      const totalTTC = totalHT * 1.2 || 0;
+
+      const response = await axios.post(`${serverUrl}/invoices`, {
+        ...invoice,
+        totalHT,
+        totalTTC,
+      });
       queryClient.setQueriesData(["invoices"], (oldData) => [
         ...oldData,
         response.data,
@@ -235,9 +244,9 @@ const Invoice = () => {
     doc.text(`${totalHt}DH`, 200, tableY + 10, { align: "right" });
 
     doc.setTextColor(143, 147, 167);
-    doc.text("TVA", 10, tableY + 17);
+    doc.text("TVA (20%)", 10, tableY + 17);
     doc.setTextColor(0, 0, 0);
-    doc.text(`+${totalTva}DH`, 200, tableY + 17, { align: "right" });
+    doc.text(`${totalTva}DH`, 200, tableY + 17, { align: "right" });
 
     doc.line(10, tableY + 29, 140, tableY + 29);
 
@@ -252,7 +261,7 @@ const Invoice = () => {
     doc.setTextColor(0, 0, 0);
     doc.text(`${totalTtc}DH`, 195, tableY + 30.5, { align: "right" });
 
-    doc.text(totalEnLettres, 10, tableY + 40, { align: "left" });
+    doc.text(totalEnLettres, 200, tableY + 40, { align: "right" });
 
     // --- Footer Notes ---
     const footerY = 262; // Place footer at the bottom
@@ -260,118 +269,138 @@ const Invoice = () => {
     doc.setFillColor(249, 250, 252);
     doc.setDrawColor(229, 231, 235);
     doc.setLineWidth(0.3);
-    doc.roundedRect(10, footerY, 190, 25, 2, 2, "FD"); // FD = Fill and Draw
+    doc.roundedRect(10, footerY - 4, 190, 29, 2, 2, "FD"); // FD = Fill and Draw
 
     doc.setFontSize(10);
     doc.text(
-      "Veuillez libeller tous les chèques à l'ordre de RGI Print.",
+      "Sté RGI Print SARL - Réalisation & Impression",
+      105,
+      footerY + 4,
+      { align: "center" }
+    );
+    doc.text(
+      "10, Rue Liberté appt 5 3e étage - Casablanca - Tél: 06 10 808 374 - Email: rgiprintz@gmail.com",
       105,
       footerY + 9,
       { align: "center" }
     );
     doc.text(
-      "Paiement total dû sous 90 jours. Comptes en retard soumis à des frais de service de 1,5% par mois.",
+      "RC n°: 638905 - Patente n°: 3421129 - ICE: 003538988000084 - IF: 6604481",
       105,
       footerY + 14,
       { align: "center" }
     );
     doc.text(
-      "rgi.print@example.com | www.siteinteressant.com",
+      "Compte Bancaire Crédit du Maroc: 021 780 000023830047086 63",
       105,
       footerY + 19,
       { align: "center" }
     );
 
     // --- Save PDF ---
+    // saveInvoice();
     doc.save(`facture_${invoice?.invoiceNumber || "exemple"}.pdf`);
   };
 
   return (
     <ThemeProvider theme={overrides}>
       <div className={styles.main}>
+        <div style={{ display: "grid", gap: "6px", padding: "24px" }}>
+          <h1 style={{ color: "#353537" }}>Factures</h1>
+          <p style={{ color: "#a3acb9" }}>
+            Consultez et gérez toutes vos factures en un seul endroit.
+          </p>
+        </div>
+
         <form onSubmit={handleSaveAndDownload} className={styles.form}>
-          <Link />
-          <h2 className={styles.secondTitle}>Facture infos</h2>
-          <div className={styles.invoiceInfos}>
-            <TextField
-              placeholder="Numéro de facture"
-              name="invoiceNumber"
-              value={invoice.invoiceNumber}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-              required
-              disabled
-            />
-            <TextField
-              placeholder="Date"
-              name="date"
-              value={invoice.date}
-              onChange={handleChange}
-              type="date"
-              fullWidth
-              margin="normal"
-              required
-            />
-            <Autocomplete
-              value={invoice.status}
-              options={["Payée", "En cours", "Annulée"]}
-              onChange={(_, value) =>
-                setInvoice((prev) => ({ ...prev, status: value }))
-              }
-              renderInput={(params) => (
-                <TextField {...params} placeholder="Statut" />
-              )}
-            />
-            <Autocomplete
-              value={client?.customerName || ""}
-              options={clientsList}
-              onChange={(_, value) =>
-                setInvoice((prev) => ({ ...prev, clientId: value.id }))
-              }
-              renderInput={(params) => (
-                <TextField {...params} placeholder="Client" />
-              )}
-            />
+          <div className={styles.section}>
+            <h2 className={styles.secondTitle}>Facture infos</h2>
+            <div className={styles.invoiceInfos}>
+              <TextField
+                placeholder="Numéro de facture"
+                name="invoiceNumber"
+                value={invoice.invoiceNumber}
+                onChange={handleChange}
+                fullWidth
+                margin="normal"
+                required
+                disabled
+              />
+              <TextField
+                placeholder="Date"
+                name="date"
+                value={invoice.date}
+                onChange={handleChange}
+                type="date"
+                fullWidth
+                margin="normal"
+                required
+              />
+              <Autocomplete
+                value={invoice.status}
+                options={["Payée", "En cours", "Annulée"]}
+                onChange={(_, value) =>
+                  setInvoice((prev) => ({ ...prev, status: value }))
+                }
+                renderInput={(params) => (
+                  <TextField {...params} placeholder="Statut" />
+                )}
+              />
+              <Autocomplete
+                value={client?.customerName || ""}
+                options={clientsList}
+                onChange={(_, value) =>
+                  setInvoice((prev) => ({ ...prev, clientId: value.id }))
+                }
+                renderInput={(params) => (
+                  <TextField {...params} placeholder="Client" />
+                )}
+              />
+            </div>
           </div>
 
-          <h2 className={styles.secondTitle}>Add items</h2>
-          <div className={styles.details}>
-            <TextField
-              placeholder="Déscription"
-              name="description"
-              value={item.description}
-              onChange={handleItemChange}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              placeholder="Quantité"
-              name="quantity"
-              value={item.quantity}
-              onChange={handleItemChange}
-              type="number"
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              placeholder="Prix Unitaire (DH)"
-              name="price"
-              value={item.price}
-              onChange={handleItemChange}
-              type="number"
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              placeholder="Total (DH)"
-              name="totalPrice"
-              value={Number(item.price * item.quantity)}
-              type="number"
-              fullWidth
-              disabled
-              margin="normal"
-            />
+          <div className={styles.section}>
+            <h2 className={styles.secondTitle}>Add items</h2>
+            <div className={styles.details}>
+              <TextField
+                placeholder="Description"
+                name="description"
+                value={item.description}
+                onChange={handleItemChange}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                placeholder="Quantité"
+                name="quantity"
+                value={item.quantity}
+                onChange={handleItemChange}
+                type="number"
+                min={0}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                placeholder="Prix Unitaire (DH)"
+                name="price"
+                value={item.price}
+                onChange={handleItemChange}
+                type="number"
+                min={0}
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                placeholder="Total (DH)"
+                name="totalPrice"
+                value={Number(item.price * item.quantity)}
+                type="number"
+                min={0}
+                fullWidth
+                disabled
+                margin="normal"
+              />
+            </div>
           </div>
 
           <Button
@@ -382,59 +411,60 @@ const Invoice = () => {
             Ajouter un élément
           </Button>
 
-          <h2 className={styles.secondTitle}>Eléménts</h2>
-
           {!invoice.items?.length ? null : (
-            <div className={styles.itemsList}>
-              {invoice.items.map((itm, index) => (
-                <div
-                  key={index}
-                  className={`${styles.details} ${styles.detailsElements}`}
-                >
-                  <TextField
-                    disabled
-                    placeholder="Description"
-                    label="Description"
-                    name="description"
-                    value={itm.description}
-                    fullWidth
-                  />
-                  <TextField
-                    disabled
-                    placeholder="Quantité"
-                    label="Quantité"
-                    name="quantity"
-                    value={itm.quantity}
-                    type="number"
-                    fullWidth
-                  />
-                  <TextField
-                    disabled
-                    placeholder="Prix Unitaire"
-                    label="Prix Unitaire"
-                    name="price"
-                    value={itm.price}
-                    type="number"
-                    fullWidth
-                  />
-                  <TextField
-                    disabled
-                    placeholder="Total"
-                    label="Total"
-                    name="totalPrice"
-                    value={Number(itm.price * itm.quantity)?.toFixed(2)}
-                    type="number"
-                    fullWidth
-                  />
-                  <div className={styles.removeItemContainer}>
-                    <Box
-                      component="i"
-                      className={`fi fi-rr-trash ${styles.removeItem}`}
-                      onClick={() => removeItem(index)}
+            <div className={styles.section}>
+              <h2 className={styles.secondTitle}>Eléménts</h2>
+              <div className={styles.itemsList}>
+                {invoice.items.map((itm, index) => (
+                  <div
+                    key={index}
+                    className={`${styles.details} ${styles.detailsElements}`}
+                  >
+                    <TextField
+                      disabled
+                      placeholder="Description"
+                      label="Description"
+                      name="description"
+                      value={itm.description}
+                      fullWidth
                     />
+                    <TextField
+                      disabled
+                      placeholder="Quantité"
+                      label="Quantité"
+                      name="quantity"
+                      value={itm.quantity}
+                      type="number"
+                      fullWidth
+                    />
+                    <TextField
+                      disabled
+                      placeholder="Prix Unitaire"
+                      label="Prix Unitaire"
+                      name="price"
+                      value={itm.price}
+                      type="number"
+                      fullWidth
+                    />
+                    <TextField
+                      disabled
+                      placeholder="Total"
+                      label="Total"
+                      name="totalPrice"
+                      value={Number(itm.price * itm.quantity)?.toFixed(2)}
+                      type="number"
+                      fullWidth
+                    />
+                    <div className={styles.removeItemContainer}>
+                      <Box
+                        component="i"
+                        className={`fi fi-rr-trash ${styles.removeItem}`}
+                        onClick={() => removeItem(index)}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 
@@ -450,11 +480,11 @@ const Invoice = () => {
             </div>
           </div>
         </form>
-        <InvoicePreview
+        {/* <InvoicePreview
           invoice={invoice}
           client={client}
           addressForm={addressForm}
-        />
+        /> */}
       </div>
     </ThemeProvider>
   );
@@ -539,16 +569,6 @@ const InvoicePreview = ({ invoice, client, addressForm }) => {
           nulla, ea debitis minus dolores.
         </p>
       </div>
-    </div>
-  );
-};
-
-const Link = () => {
-  return (
-    <div className={styles.link}>
-      <p>All invoices</p>
-      <i class="fi fi-rr-angle-small-right" />
-      <p style={{ color: "#111111" }}>Create new invoice</p>
     </div>
   );
 };
