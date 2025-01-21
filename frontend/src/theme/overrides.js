@@ -36,7 +36,7 @@ export const overrides = createTheme({
           margin: 0,
           "& .MuiInputBase-root": {
             gap: "8px",
-            fontSize: "14px",
+            fontSize: "13px",
             borderRadius: "8px",
             height: "fit-content",
             backgroundColor: "#fff",
@@ -108,7 +108,7 @@ export const overrides = createTheme({
           minHeight: 0,
           lineHeight: 1,
           fontWeight: 500,
-          fontSize: "14px",
+          fontSize: "13px",
           minWidth: "100px",
           textAlign: "left",
           color: "#474959",
@@ -148,7 +148,9 @@ export const overrides = createTheme({
         },
         popper: {
           "& .MuiPaper-root": {
-            borderRadius: "12px",
+            fontSize: "13px",
+            marginTop: "6px",
+            borderRadius: "8px",
             fontFamily: "inherit",
             boxShadow: "0px 0px 10px #00000017",
           },
@@ -177,8 +179,9 @@ export const overrides = createTheme({
           },
           "& .MuiTableCell-root": {
             borderBottom: 0,
+            padding: "8px 12px",
+            fontSize: "13px",
             color: "#9198a6",
-            padding: "8px",
             fontFamily: "inherit",
           },
         },
@@ -190,7 +193,8 @@ export const overrides = createTheme({
           "& .MuiTableRow-root": {
             "&:last-child": {},
             "& .MuiTableCell-root": {
-              padding: "8px",
+              fontSize: "13px",
+              padding: "8px 12px",
               fontFamily: "inherit",
             },
           },

@@ -1,0 +1,61 @@
+.main {
+  gap: 24px;
+  padding: 24px;
+  display: grid;
+}
+
+.form {
+  gap: 24px;
+  display: grid;
+  overflow: hidden;
+  height: fit-content;
+}
+
+.clientInfos {
+  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.address {
+  gap: 12px;
+  display: grid;
+  grid-template-columns: 3fr repeat(2, 1fr);
+}
+
+.secondTitle {
+  color: #111111;
+  height: fit-content;
+}
+
+.bottom {
+  display: flex;
+  justify-content: flex-end;
+  width: -webkit-fill-available;
+}
+
+.clientsTable {
+  padding: 16px;
+  overflow: hidden;
+  max-height: 219px;
+  overflow-y: scroll;
+  border-radius: 16px;
+  border: 1px solid #e8e9eb;
+}
+
+.icon {
+  padding: 6px;
+  cursor: pointer;
+  width: fit-content;
+  border-radius: 6px;
+  &:hover {
+    background-color: #e8e9eb;
+  }
+}
+
+.delete {
+  color: #d83b3b;
+  &:hover {
+    background-color: #fcebeb;
+  }
+}

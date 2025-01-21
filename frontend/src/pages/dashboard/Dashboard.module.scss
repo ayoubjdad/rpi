@@ -6,7 +6,7 @@
 
 .sidebar {
   gap: 20px;
-  width: 15%;
+  width: 18%;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -77,4 +77,43 @@
   i {
     font-size: 18px;
   }
+}
+
+.container {
+  display: grid;
+  gap: 8px;
+}
+
+.card {
+  gap: 8px;
+  padding: 13px;
+  display: flex;
+  border-radius: 8px;
+  align-items: center;
+  border: 1px solid #c7c7c7;
+  justify-content: space-between;
+}
+
+.cardLeft {
+  gap: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #c7c7c7;
+}
+
+.menuIcon {
+  cursor: pointer;
+  color: #c7c7c7;
+  font-size: inherit;
+}
+
+.footerText {
+  font-size: 12px;
+  color: #a2a2a2;
 }

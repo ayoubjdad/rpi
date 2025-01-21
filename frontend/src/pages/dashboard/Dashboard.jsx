@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Tabs, Tab, Box, ThemeProvider } from "@mui/material";
+import { Tabs, Tab, Box, ThemeProvider, Divider } from "@mui/material";
 import styles from "./Dashboard.module.scss";
 import logo from "../../assets/images/logo.png";
 import { overrides } from "../../theme/overrides";
-import Invoice from "./invoice/Invoice";
-import Client from "./client/Client";
 import StatsDashboard from "./dashboard/Dashboard";
+import InvoicesList from "./invoice/invoices_list/InvoicesList";
+import Invoice from "./invoice/create_invoice/Invoice";
+import ClientList from "./client/clients_list/ClientList";
+import Client from "./client/create_client/Client";
 
 function Dashboard() {
   const [tabIndex, setTabIndex] = useState(0);
@@ -18,6 +20,7 @@ function Dashboard() {
     <Box className={styles.dashboard}>
       <Box className={styles.sidebar}>
         <img src={logo} alt="RgiStudio" className={styles.logo} />
+
         <ThemeProvider theme={overrides}>
           <Tabs
             orientation="vertical"
@@ -31,11 +34,22 @@ function Dashboard() {
               iconPosition="start"
             />
             <Tab
+              label="Liste des factures"
+              icon={<i className="fi fi-rr-receipt" />}
+              iconPosition="start"
+            />
+            <Divider />
+            <Tab
               label="Clients"
-              icon={<i className="fi fi-rr-users" />}
+              icon={<i className="fi fi-rr-user-add" />}
               iconPosition="start"
             />
             <Tab
+              label="Liste des clients"
+              icon={<i className="fi fi-rr-users-alt" />}
+              iconPosition="start"
+            />
+            {/*    <Tab
               label="Dashboard"
               icon={<i className="fi fi-rr-house-blank" />}
               iconPosition="start"
@@ -54,9 +68,20 @@ function Dashboard() {
               label="Paramètres"
               icon={<i className="fi fi-rr-settings" />}
               iconPosition="start"
-            />
+            /> */}
           </Tabs>
         </ThemeProvider>
+
+        <div className={styles.container}>
+          <div className={styles.card}>
+            <div className={styles.cardLeft}>
+              <div className={styles.avatar} />
+              <p>Mohamed Jdad</p>
+            </div>
+            <i className={`fi fi-rr-menu-dots-vertical ${styles.menuIcon}`} />
+          </div>
+          <p className={styles.footerText}>© 2025 RGI Studio</p>
+        </div>
       </Box>
 
       {tabIndex === 0 && (
@@ -66,14 +91,24 @@ function Dashboard() {
       )}
       {tabIndex === 1 && (
         <Box className={styles.content}>
+          <InvoicesList />
+        </Box>
+      )}
+      {tabIndex === 3 && (
+        <Box className={styles.content}>
           <Client />
         </Box>
       )}
-      {tabIndex === 2 && (
+      {tabIndex === 4 && (
+        <Box className={styles.content}>
+          <ClientList />
+        </Box>
+      )}
+      {/* {tabIndex === 3 && (
         <Box className={styles.content}>
           <StatsDashboard />
         </Box>
-      )}
+      )} */}
     </Box>
   );
 }

@@ -1,0 +1,17 @@
+.clientContainer {
+  gap: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.clientLetter {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  color: white;
+  font-size: 18px;
+  align-items: center;
+  border-radius: 60px;
+  justify-content: center;
+  background-color: gray;
+}

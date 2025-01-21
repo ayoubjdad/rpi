@@ -11,11 +11,15 @@ import {
   TableRow,
 } from "@mui/material";
 import { useQueryClient } from "react-query";
+import axios from "axios";
+import { serverUrl } from "../../../config/config";
+import { downloadInvoice } from "../../../helpers/function.helper";
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
 
   const invoices = queryClient.getQueryData("invoices");
+  const clients = queryClient.getQueryData("clients");
 
   return (
     <ThemeProvider theme={overrides}>
@@ -40,7 +44,7 @@ export default function Dashboard() {
           <Stat title="Credit" balance="1.023" percentage="-26" />
         </div>
 
-        <InvoicesTable invoices={invoices} />
+        <InvoicesTable invoices={invoices} clients={clients} />
       </div>
     </ThemeProvider>
   );
@@ -68,9 +72,10 @@ const Stat = ({ title, balance, percentage }) => {
   );
 };
 
-const NewTableRow = ({ invoice = {} }) => {
+const NewTableRow = ({ invoice = {}, clients = [] }) => {
+  const queryClient = useQueryClient();
   const {
-    id,
+    _id: id,
     invoiceNumber = "0",
     date = Date.now(),
     clientId = null,
@@ -79,19 +84,39 @@ const NewTableRow = ({ invoice = {} }) => {
     status = "En cours",
   } = invoice;
 
+  const client = clients.find((client) => client.id === clientId) || {};
+  const clientName = client.customerName || "";
   const formattedDate = new Date(date).toLocaleDateString("fr-FR", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 
+  const deleteInvoice = async (invoiceId) => {
+    try {
+      await axios.delete(`${serverUrl}/invoices/${invoiceId}`);
+      queryClient.setQueryData("invoices", (oldData) => {
+        if (!oldData) return [];
+        return oldData.filter((invoice) => invoice._id !== invoiceId);
+      });
+    } catch (error) {
+      console.error(
+        "Error deleting invoice:",
+        error.response?.data || error.message
+      );
+      alert("Failed to delete invoice. Please try again.");
+    }
+  };
+
   return (
     <TableRow key={id}>
       <TableCell>{invoiceNumber}</TableCell>
       <TableCell>{formattedDate}</TableCell>
-      <TableCell>{clientId}</TableCell>
+      <TableCell>{clientName}</TableCell>
       <TableCell>{(totalHT * TVA) / 100}</TableCell>
-      <TableCell>{status}</TableCell>
+      <TableCell>
+        <p className={styles.percentage}>{status}</p>
+      </TableCell>
       <TableCell>
         <div
           style={{
@@ -100,13 +125,14 @@ const NewTableRow = ({ invoice = {} }) => {
             justifyContent: "flex-end",
           }}
         >
-          {/* <Box
-                  component="i"
-                  className={`fi fi-rr-pencil ${styles.icon}`}
-                /> */}
           <Box
             component="i"
-            // onClick={() => deleteClient(client.id, client.customerName)}
+            onClick={(e) => downloadInvoice(e, invoice, client)}
+            className={`fi fi-rr-download ${styles.icon}`}
+          />
+          <Box
+            component="i"
+            onClick={() => deleteInvoice(id)}
             className={`fi fi-rr-trash ${styles.icon} ${styles.delete}`}
           />
         </div>
@@ -115,7 +141,7 @@ const NewTableRow = ({ invoice = {} }) => {
   );
 };
 
-const InvoicesTable = ({ invoices = [] }) => {
+const InvoicesTable = ({ invoices = [], clients = [] }) => {
   return (
     <div className={styles.invoicesTable}>
       <Table>
@@ -131,7 +157,7 @@ const InvoicesTable = ({ invoices = [] }) => {
         </TableHead>
         <TableBody>
           {invoices.map((invoice) => (
-            <NewTableRow invoice={invoice} />
+            <NewTableRow invoice={invoice} clients={clients} />
           ))}
         </TableBody>
       </Table>

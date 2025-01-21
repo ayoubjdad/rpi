@@ -4,29 +4,18 @@ import styles from "./Client.module.scss";
 import axios from "axios";
 import { useQueryClient } from "react-query";
 
-import {
-  Box,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TextField,
-  ThemeProvider,
-} from "@mui/material";
+import { Button, TextField, ThemeProvider } from "@mui/material";
 
-import { overrides } from "../../../theme/overrides";
-import { serverUrl } from "../../../config/config";
+import { overrides } from "../../../../theme/overrides";
+import { serverUrl } from "../../../../config/config";
 
 const Client = () => {
   const queryClient = useQueryClient();
 
   const clients = queryClient.getQueryData("clients");
-  const clientId = String(clients?.length + 1);
 
   const initialClientValue = {
-    id: clientId,
+    id: "",
     ICE: "",
     customerName: "",
     email: "",
@@ -38,15 +27,14 @@ const Client = () => {
     },
   };
 
-  const [client, setClient] = useState({
-    ...initialClientValue,
-  });
+  const [client, setClient] = useState({ ...initialClientValue });
 
   const saveClient = async (e) => {
     e?.preventDefault();
 
     try {
-      await axios.post(`${serverUrl}/clients`, client);
+      const id = String(Math.random() * 10);
+      await axios.post(`${serverUrl}/clients`, { ...client, id });
       queryClient.setQueriesData(["clients"], [...clients, client]);
 
       setClient({ ...initialClientValue });
@@ -68,8 +56,8 @@ const Client = () => {
   return (
     <ThemeProvider theme={overrides}>
       <div className={styles.main}>
-        <div style={{ display: "grid", gap: "6px" }}>
-          <h1 style={{ color: "#353537" }}>Factures</h1>
+        <div style={{ display: "grid", gap: "6px", height: "fit-content" }}>
+          <h1 style={{ color: "#353537" }}>Clients</h1>
           <p style={{ color: "#a3acb9" }}>
             Consultez et gérez toutes vos factures en un seul endroit.
           </p>
@@ -168,105 +156,8 @@ const Client = () => {
             </Button>
           </div>
         </form>
-
-        <h2 className={styles.secondTitle}>Liste des clients</h2>
-        <ClientsTable clients={clients} />
       </div>
     </ThemeProvider>
-  );
-};
-
-const ClientsTable = ({ clients = [] }) => {
-  const getAddress = (address) => {
-    if (!address) return "";
-
-    const { street, city, country } = address;
-
-    if (!street && !city && !country) return "";
-
-    let result = "";
-
-    if (street) {
-      result += `${street}`;
-    }
-
-    if (city) {
-      result += `, ${city}`;
-    }
-
-    if (country) {
-      result += `, ${country}`;
-    }
-
-    return result;
-  };
-
-  const deleteClient = async (id, customerName) => {
-    try {
-      await axios.delete(`/clients/${id}`);
-      alert(`${customerName} a été supprimé avec succès.`);
-    } catch (error) {
-      alert(`Erreur`);
-      console.error("❌ Error deleting client:", error);
-    }
-  };
-
-  return (
-    <div className={styles.clientsTable}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Client</TableCell>
-            <TableCell />
-            <TableCell>ICE</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Téléphone</TableCell>
-            <TableCell>Adresse</TableCell>
-            <TableCell />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {clients.map((client) => (
-            <TableRow key={client.id}>
-              <TableCell>
-                <div
-                  style={{
-                    backgroundColor: "#f6f8fa",
-                    height: "36px",
-                    width: "36px",
-                    borderRadius: "50%",
-                  }}
-                />
-              </TableCell>
-              <TableCell>{client.customerName}</TableCell>
-              <TableCell>{client.ICE}</TableCell>
-              <TableCell>{client.email}</TableCell>
-              <TableCell>{client.phone}</TableCell>
-              <TableCell>{getAddress(client.address)}</TableCell>
-              <TableCell>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "8px",
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  {/* <Box
-                    component="i"
-                    className={`fi fi-rr-pencil ${styles.icon}`}
-                  /> */}
-                  <Box
-                    component="i"
-                    onClick={() => deleteClient(client.id, client.customerName)}
-                    className={`fi fi-rr-trash ${styles.icon} ${styles.delete}`}
-                  />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
   );
 };
 

@@ -36,9 +36,14 @@
 
 .clientsTable {
   padding: 16px;
-  overflow: hidden;
   border-radius: 16px;
   border: 1px solid #e8e9eb;
+}
+
+.icons {
+  gap: 8px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .icon {
