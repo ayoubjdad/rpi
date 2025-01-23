@@ -159,11 +159,11 @@ const ClientList = () => {
                   <TableCell>{getAddress(client.address)}</TableCell>
                   <TableCell>
                     <div className={styles.icons}>
-                      <Box
+                      {/* <Box
                         component="i"
                         onClick={() => setClientToEdit(client._id)}
                         className={`fi fi-rr-pencil ${styles.icon}`}
-                      />
+                      /> */}
                       <Box
                         component="i"
                         onClick={() => deleteClient(client)}

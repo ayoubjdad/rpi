@@ -16,7 +16,7 @@ import { downloadInvoice } from "../../../../helpers/function.helper";
 import { overrides } from "../../../../theme/overrides";
 import ClientComponent from "../../../../components/client/ClientComponent";
 
-export default function InvoicesList() {
+export default function InvoicesList({ setInvoiceToEdit }) {
   const queryClient = useQueryClient();
 
   const invoices = queryClient.getQueryData("invoices") || [];
@@ -48,7 +48,11 @@ export default function InvoicesList() {
               </TableHead>
               <TableBody>
                 {invoices.map((invoice) => (
-                  <NewTableRow invoice={invoice} clients={clients} />
+                  <NewTableRow
+                    invoice={invoice}
+                    clients={clients}
+                    setInvoiceToEdit={setInvoiceToEdit}
+                  />
                 ))}
               </TableBody>
             </Table>
@@ -59,8 +63,13 @@ export default function InvoicesList() {
   );
 }
 
-const NewTableRow = ({ invoice = {}, clients = [] }) => {
+const NewTableRow = ({
+  invoice = {},
+  clients = [],
+  setInvoiceToEdit = () => {},
+}) => {
   const queryClient = useQueryClient();
+
   const {
     _id: id,
     invoiceNumber = "0",
@@ -132,7 +141,7 @@ const NewTableRow = ({ invoice = {}, clients = [] }) => {
         >
           <Box
             component="i"
-            onClick={(e) => downloadInvoice(e, invoice, client)}
+            onClick={() => setInvoiceToEdit(id)}
             className={`fi fi-rr-pencil ${styles.icon}`}
           />
           <Box

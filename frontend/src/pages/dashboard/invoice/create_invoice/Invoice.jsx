@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import styles from "./Invoice.module.scss";
 
 import axios from "axios";
-import { jsPDF } from "jspdf";
 import { useQueryClient } from "react-query";
 
 import {
@@ -16,10 +15,7 @@ import {
 import { makeStyles } from "@mui/styles";
 
 import { overrides } from "../../../../theme/overrides";
-import {
-  downloadInvoice,
-  prixEnLettres,
-} from "../../../../helpers/function.helper";
+import { downloadInvoice } from "../../../../helpers/function.helper";
 import { serverUrl } from "../../../../config/config";
 
 const useStyles = makeStyles((theme) => ({
@@ -33,26 +29,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Invoice = () => {
+const Invoice = ({ invoiceToEdit, setInvoiceToEdit }) => {
   const classes = useStyles();
   const queryClient = useQueryClient();
 
   const clients = queryClient.getQueryData("clients");
   const invoices = queryClient.getQueryData("invoices");
-  const invoiceNumber = invoices[invoices.length - 1]?.invoiceNumber || 0 + 1;
+  const invoiceNumber = (invoices[invoices.length - 1]?.invoiceNumber || 0) + 1;
 
-  const initialInvoiceValue = {
-    id: String(Math.random()),
-    invoiceNumber: invoiceNumber,
-    billingDate: "",
-    paymentDate: "",
-    clientId: "",
-    items: [],
-    totalHT: 0,
-    TVA: 20,
-    notes: "",
-    status: "",
-  };
+  const initialInvoiceValue = useMemo(() => {
+    if (invoiceToEdit) {
+      return invoices.find((inv) => inv._id === invoiceToEdit);
+    }
+
+    return {
+      id: String(Math.random()),
+      invoiceNumber: invoiceNumber,
+      billingDate: "",
+      paymentDate: "",
+      clientId: "",
+      items: [],
+      totalHT: 0,
+      TVA: 20,
+      notes: "",
+      status: "",
+    };
+  }, [invoiceToEdit]);
 
   const [invoice, setInvoice] = useState({
     ...initialInvoiceValue,
@@ -98,9 +100,40 @@ const Invoice = () => {
       ]);
 
       alert("Enregistrement réussi");
-      setInvoice({ ...initialInvoiceValue });
+      setInvoice({ ...initialInvoiceValue, invoiceNumber: invoiceNumber + 1 });
     } catch (error) {
       console.error("❌ Error saving invoice:", error);
+      throw error;
+    }
+  };
+
+  const editInvoice = async (e) => {
+    e?.preventDefault();
+
+    try {
+      const totalHT =
+        invoice?.items.reduce(
+          (sum, item) => sum + item.quantity * item.price,
+          0
+        ) || 0;
+      const totalTTC = totalHT * 1.2 || 0;
+
+      const response = await axios.put(`${serverUrl}/invoices/${invoice._id}`, {
+        ...invoice,
+        totalHT,
+        totalTTC,
+      });
+
+      queryClient.setQueriesData(["invoices"], (oldData) =>
+        oldData.map((inv) =>
+          inv.id === response.data.id ? response.data : inv
+        )
+      );
+
+      alert("Modification réussie");
+      setInvoiceToEdit(null);
+    } catch (error) {
+      console.error("❌ Error editing invoice:", error);
       throw error;
     }
   };
@@ -328,12 +361,17 @@ const Invoice = () => {
 
           <div className={styles.bottom}>
             <div className={styles.buttons}>
-              <Button onClick={saveInvoice} variant="outlined">
-                Enregistrer
+              <Button
+                onClick={invoiceToEdit ? editInvoice : saveInvoice}
+                variant="outlined"
+              >
+                {invoiceToEdit ? "Modifier" : "Enregistrer"}
               </Button>
 
               <Button type="submit" variant="contained">
-                Enregistrer & Télécharger en PDF
+                {`${
+                  invoiceToEdit ? "Modifier" : "Enregistrer"
+                } & Télécharger en PDF`}
               </Button>
             </div>
           </div>
