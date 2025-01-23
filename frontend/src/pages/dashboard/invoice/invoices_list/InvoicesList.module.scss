@@ -2,6 +2,22 @@
   overflow: hidden;
 }
 
+.filters {
+  gap: 16px;
+  display: grid;
+  align-items: center;
+  margin-bottom: 16px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.filter {
+  gap: 8px;
+  display: grid;
+  p {
+    color: #9198a6;
+  }
+}
+
 .tableContainer {
   padding: 0 24px;
 }

@@ -1,13 +1,15 @@
 import {
+  Autocomplete,
   Box,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  TextField,
   ThemeProvider,
 } from "@mui/material";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import styles from "./InvoicesList.module.scss";
 import { useQueryClient } from "react-query";
 import { serverUrl } from "../../../../config/config";
@@ -16,11 +18,76 @@ import { downloadInvoice } from "../../../../helpers/function.helper";
 import { overrides } from "../../../../theme/overrides";
 import ClientComponent from "../../../../components/client/ClientComponent";
 
+const months = [
+  "Janvier",
+  "Février",
+  "Mars",
+  "Avril",
+  "Mai",
+  "Juin",
+  "Juillet",
+  "Août",
+  "Septembre",
+  "Octobre",
+  "Novembre",
+  "Décembre",
+];
+
 export default function InvoicesList({ setInvoiceToEdit }) {
   const queryClient = useQueryClient();
 
-  const invoices = queryClient.getQueryData("invoices") || [];
-  const clients = queryClient.getQueryData("clients") || {};
+  const invoices = useMemo(
+    () => queryClient.getQueryData("invoices") || [],
+    [queryClient]
+  );
+  const clients = useMemo(
+    () => queryClient.getQueryData("clients") || {},
+    [queryClient]
+  );
+
+  const clientsList = clients.map(({ customerName }) => customerName);
+
+  const [filters, setFilters] = useState(null);
+
+  const filtredInvoices = useMemo(() => {
+    if (!filters || Object.keys(filters).length === 0) {
+      // Return all invoices when no filters are applied
+      return invoices;
+    }
+
+    let updatedInvoices = [...invoices];
+
+    if (filters.client) {
+      const clientName = clients.find(
+        ({ customerName }) => customerName === filters.client
+      );
+      if (clientName) {
+        updatedInvoices = updatedInvoices.filter(
+          ({ clientId }) => clientId === clientName.id
+        );
+      }
+    }
+
+    if (filters.status) {
+      updatedInvoices = updatedInvoices.filter(
+        ({ status }) => status === filters.status
+      );
+    }
+
+    if (filters.month) {
+      updatedInvoices = updatedInvoices.filter(({ billingDate }) => {
+        const date = new Date(billingDate);
+        const monthIndex = date.getUTCMonth();
+        return filters.month === months[monthIndex];
+      });
+    }
+
+    return updatedInvoices;
+  }, [invoices, filters, clients, months]);
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   return (
     <div className={styles.main}>
@@ -34,6 +101,48 @@ export default function InvoicesList({ setInvoiceToEdit }) {
       <div className={styles.tableContainer}>
         <div className={styles.table}>
           <ThemeProvider theme={overrides}>
+            <div className={styles.filters}>
+              <div className={styles.filter}>
+                <p>Filtrer par client</p>
+                <Autocomplete
+                  value={filters?.client}
+                  options={clientsList}
+                  onChange={(_, value) => {
+                    handleFilterChange("client", value);
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} placeholder="Client" />
+                  )}
+                />
+              </div>
+              <div className={styles.filter}>
+                <p>Filtrer par mois</p>
+                <Autocomplete
+                  value={filters?.month}
+                  options={months}
+                  onChange={(_, value) => {
+                    handleFilterChange("month", value);
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} placeholder="Statut" />
+                  )}
+                />
+              </div>
+
+              <div className={styles.filter}>
+                <p>Filtrer par statut</p>
+                <Autocomplete
+                  value={filters?.status}
+                  options={["Payée", "En cours", "Annulée"]}
+                  onChange={(_, value) => {
+                    handleFilterChange("status", value);
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} placeholder="Statut" />
+                  )}
+                />
+              </div>
+            </div>
             <Table>
               <TableHead>
                 <TableRow>
@@ -47,7 +156,7 @@ export default function InvoicesList({ setInvoiceToEdit }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {invoices.map((invoice) => (
+                {filtredInvoices.map((invoice) => (
                   <NewTableRow
                     invoice={invoice}
                     clients={clients}
@@ -121,7 +230,7 @@ const NewTableRow = ({
       </TableCell>
       <TableCell>{formattedDate}</TableCell>
       <TableCell>{formattedPaymentDate}</TableCell>
-      <TableCell>{(totalHT * TVA) / 100} Dh</TableCell>
+      <TableCell>{(totalHT * (1 + TVA / 100)).toFixed(2)} Dh</TableCell>
       <TableCell>
         <p
           className={`${styles.status} ${
