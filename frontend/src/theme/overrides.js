@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material";
+import { palette } from "./palette";
 
 export const overrides = createTheme({
   typography: {
@@ -17,7 +18,7 @@ export const overrides = createTheme({
           // lineHeight: 1,
           textTransform: "none",
           fontFamily: "HelveticaNowText",
-          backgroundColor: "#3240fe",
+          backgroundColor: palette["warm-red"],
         },
         outlined: {
           backgroundColor: "transparent",
@@ -55,10 +56,10 @@ export const overrides = createTheme({
       styleOverrides: {
         root: {
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#3240fe",
+            borderColor: palette["warm-red"],
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#3240fe",
+            borderColor: palette["warm-red"],
           },
           "&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
             borderColor: "#e8e9eb",
@@ -119,7 +120,7 @@ export const overrides = createTheme({
           alignItems: "flex-start",
           fontFamily: "HelveticaNowText",
           "&.Mui-selected": {
-            color: "#3240fe",
+            color: palette["warm-red"],
             backgroundColor: "#fff",
             border: "1px solid #e8e9eb",
           },

@@ -17,10 +17,11 @@ import { makeStyles } from "@mui/styles";
 import { overrides } from "../../../../theme/overrides";
 import { downloadInvoice } from "../../../../helpers/function.helper";
 import { serverUrl } from "../../../../config/config";
+import { palette } from "../../../../theme/palette";
 
 const useStyles = makeStyles((theme) => ({
   addItem: {
-    color: "#3240fe !important",
+    color: `${palette["warm-red"]} !important`,
     padding: "0px 24px !important",
     backgroundColor: "transparent !important",
     "& .MuiButton-startIcon": {
