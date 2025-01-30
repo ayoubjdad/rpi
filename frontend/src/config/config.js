@@ -1,1 +1,1 @@
-export const serverUrl = "https://rpi-zmir.onrender.com";
+export const serverUrl = "https://rpi-jyqt.onrender.com";
