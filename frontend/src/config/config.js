@@ -1,1 +1,1 @@
-export const serverUrl = "http://localhost:3002";
+export const serverUrl = "https://rpi-zmir.onrender.com";
