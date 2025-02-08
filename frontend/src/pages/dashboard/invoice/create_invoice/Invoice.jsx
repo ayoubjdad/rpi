@@ -34,9 +34,10 @@ const Invoice = ({ invoiceToEdit, setInvoiceToEdit }) => {
   const classes = useStyles();
   const queryClient = useQueryClient();
 
-  const clients = queryClient.getQueryData("clients");
-  const invoices = queryClient.getQueryData("invoices");
-  const invoiceNumber = (invoices[invoices.length - 1]?.invoiceNumber || 0) + 1;
+  const clients = queryClient.getQueryData("clients") || [];
+  const invoices = queryClient.getQueryData("invoices") || [];
+  const invoiceNumber =
+    (invoices?.[invoices.length - 1]?.invoiceNumber || 0) + 1;
 
   const initialInvoiceValue = useMemo(() => {
     if (invoiceToEdit) {

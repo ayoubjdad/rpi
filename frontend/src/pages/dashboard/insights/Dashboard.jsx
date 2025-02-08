@@ -18,8 +18,8 @@ import { downloadInvoice } from "../../../helpers/function.helper";
 export default function Dashboard() {
   const queryClient = useQueryClient();
 
-  const invoices = queryClient.getQueryData("invoices");
-  const clients = queryClient.getQueryData("clients");
+  const invoices = queryClient.getQueryData("invoices") || [];
+  const clients = queryClient.getQueryData("clients") || [];
 
   return (
     <ThemeProvider theme={overrides}>

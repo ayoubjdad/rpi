@@ -12,7 +12,7 @@ import { serverUrl } from "../../../../config/config";
 const Client = () => {
   const queryClient = useQueryClient();
 
-  const clients = queryClient.getQueryData("clients");
+  const clients = queryClient.getQueryData("clients") || [];
 
   const initialClientValue = {
     id: "",

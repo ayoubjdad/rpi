@@ -41,7 +41,7 @@ export default function InvoicesList({ setInvoiceToEdit }) {
     [queryClient]
   );
   const clients = useMemo(
-    () => queryClient.getQueryData("clients") || {},
+    () => queryClient.getQueryData("clients") || [],
     [queryClient]
   );
 

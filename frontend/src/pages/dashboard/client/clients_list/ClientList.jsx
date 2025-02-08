@@ -21,7 +21,7 @@ import ClientComponent from "../../../../components/client/ClientComponent";
 const ClientList = () => {
   const queryClient = useQueryClient();
 
-  const clients = queryClient.getQueryData("clients");
+  const clients = queryClient.getQueryData("clients") || [];
 
   const initialClientValue = {
     id: "",
